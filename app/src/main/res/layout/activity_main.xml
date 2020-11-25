@@ -48,16 +48,16 @@
             app:itemTextColor="@color/white"
             app:menu="@menu/bottom_toolbar_menu">
         </com.google.android.material.bottomnavigation.BottomNavigationView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/navigation_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            app:itemIconTint="@color/colorAccent"
-            app:headerLayout="@layout/header_layout"
-            app:menu="@menu/drawer_menu">
-        </com.google.android.material.navigation.NavigationView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:itemIconTint="@color/colorAccent"
+        app:headerLayout="@layout/header_layout"
+        app:menu="@menu/drawer_menu">
+    </com.google.android.material.navigation.NavigationView>
 
     <!--    <androidx.appcompat.widget.Toolbar-->
     <!--        app:titleTextColor="@color/colorAccent"-->

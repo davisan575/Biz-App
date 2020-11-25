@@ -10,7 +10,7 @@
     <androidx.appcompat.widget.Toolbar
         app:titleTextColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/friends_toolbar"
+        android:id="@+id/add_friends_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/navy_blue"

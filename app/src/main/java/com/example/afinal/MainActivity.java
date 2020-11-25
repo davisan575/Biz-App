@@ -88,56 +88,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         frame.addView(contentView);
 //        ab.setDisplayHomeAsUpEnabled(true);
 
-//        Toolbar bottomToolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
-//        Menu menu=bottomToolbar.getMenu();
-//        getMenuInflater().inflate(R.menu.bottom_toolbar_menu, menu);
-//        bottomToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                Intent intent;
-//                View view;
-//                ActivityOptionsCompat optionsCompat;
-//                switch (item.getItemId()) {
-//                    case R.id.friends_list_action:
-//                        intent = new Intent(MainActivity.this, FriendsActivity.class);
-//                        intent.setAction(Intent.ACTION_VIEW);
-//                        view=findViewById(R.id.friends_list_action);
-//                        optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, "friends_activity_transition");
-//                        startActivity(intent, optionsCompat.toBundle());
-//                        Log.d("bottom bar", "friends");
-//                        return true;
-//                    case R.id.edit_profile_action:
-//                        intent = new Intent(MainActivity.this, EditProfileActivity.class);
-//                        intent.setAction(Intent.ACTION_VIEW);
-//                        view=findViewById(R.id.edit_profile_action);
-//                        optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, "edit_profile_activity_transition");
-//                        startActivity(intent, optionsCompat.toBundle());
-//                        Log.d("bottom bar", "edit profile");
-//                        return true;
-//                    case R.id.logout_action:
-//                        view = findViewById(R.id.logout_action);
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//                        builder.setTitle("Are you sure you want to log out?");
-//                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                Toast.makeText(MainActivity.this, "User wants to log out", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.dismiss();                            }
-//                        });
-//                        builder.create().show();
-//                        Log.d("bottom bar", "log out");
-//                        return true;
-//                    default:
-//                        return true;
-//                }
-//            }
-//        });
-
         BottomNavigationView bottomToolbar= findViewById(R.id.bottom_toolbar);
         bottomToolbar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -156,14 +106,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                         Log.d("bottom bar", "share action");
                         return true;
-//                    case R.id.add_friend_action:
-//                        intent = new Intent(MainActivity.this, AddNewFriends.class);
-//                        intent.setAction(Intent.ACTION_VIEW);
-//                        view=findViewById(R.id.add_friend_action);
-//                        optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, "add_new_friends_activity_transition");
-//                        startActivity(intent, optionsCompat.toBundle());
-//                        Log.d("bottom bar", "add new friends");
-//                        return true;
+                    case R.id.add_friend_action:
+                        intent = new Intent(MainActivity.this, AddNewFriends.class);
+                        intent.setAction(Intent.ACTION_VIEW);
+                        view=findViewById(R.id.add_friend_action);
+                        optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, view, "add_new_friends_activity_transition");
+                        startActivity(intent, optionsCompat.toBundle());
+                        Log.d("bottom bar", "add new friends");
+                        return true;
                     case R.id.friends_list_action:
                         intent = new Intent(MainActivity.this, FriendsActivity.class);
                         intent.setAction(Intent.ACTION_VIEW);
@@ -180,24 +130,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         startActivity(intent, optionsCompat.toBundle());
                         Log.d("bottom bar", "edit profile");
                         return true;
-                    case R.id.logout_action:
-                        view = findViewById(R.id.logout_action);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle("Are you sure you want to log out?");
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(MainActivity.this, "User wants to log out", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();                            }
-                        });
-                        builder.create().show();
-                        Log.d("bottom bar", "log out");
-                        return true;
                     default:
                         return true;
                 }
@@ -209,81 +141,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         //set_bottom_bar();
         getMenuInflater().inflate(R.menu.top_toolbar_menu, menu);
-
-        MenuItem myActionMenuItem = menu.findItem(R.id.search_action);
-        SearchView searchView=(SearchView)myActionMenuItem.getActionView();
-        searchView.setQueryHint("Search new connections");
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Toast toast=Toast.makeText(getApplicationContext(),"Query Text="+query,Toast.LENGTH_SHORT);
-                toast.show();
-                return true;
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Toast toast=Toast.makeText(getApplicationContext(),newText,Toast.LENGTH_SHORT);
-                toast.show();
-                return true;
-            }
-        });
-
-        MenuItem item = menu.findItem(R.id.search_spinner);
-        Spinner spinner = (Spinner) item.getActionView();
-//        ArrayAdapter<CharSequence> adapter= ArrayAdapter.createFromResource(this, R.array.filter_options,
-//                android.R.layout.simple_spinner_dropdown_item);
-
-        List<String> list = new ArrayList<String>();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item_layout, list);
-
-        list.add("Name");
-        list.add("Phone");
-        list.add("Email");
-
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Search filter selected: "
-                        + parent.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-//        MenuItem shareItem = menu.findItem(R.id.share_action);
-//        ShareActionProvider myShareActionProvider =(ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-//        myShareActionProvider.setShareIntent(chooser);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-//            case R.id.settings_action:
-//                /*Intent intent=new Intent(this,ViewPagerActivity.class);
-//                startActivity(intent);*/
-//                Toast.makeText(this, "SEttings", Toast.LENGTH_SHORT).show();
-//                return true;
-//            case R.id.share_action:
-//                /*intent=new Intent(this,FragmentDemoActivity.class);
-//                startActivity(intent);*/
-//                Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
-//                return true;
-//            case R.id.cut_action:
-//                Toast toast=Toast.makeText(getApplicationContext(),"Cut Clicked",Toast.LENGTH_SHORT);
-//                toast.show();
-//                return true;
-//            case R.id.extras_action:
-//                toast=Toast.makeText(getApplicationContext(),"Extra Clicked",Toast.LENGTH_SHORT);
-//                toast.show();
-//                return true;
-//            case R.id.extras1_action:
-//                toast=Toast.makeText(getApplicationContext(),"Extra1 Clicked",Toast.LENGTH_SHORT);
-//                toast.show();
-//                return true;
+            case R.id.logout_action:
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Are you sure you want to log out?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "User wants to log out", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();                            }
+                });
+                builder.create().show();
+                Log.d("bottom bar", "log out");
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -348,13 +228,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
         }
-    }
-
-    public void FriendsList(View view) {
-//        Intent intent = new Intent(this, FriendsActivity.class);
-//        intent.setAction(Intent.ACTION_VIEW);
-//        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, "friends_activity_transition");
-//        startActivity(intent, optionsCompat.toBundle());
-        Toast.makeText(getApplicationContext(),"Extra1 Clicked",Toast.LENGTH_SHORT).show();
     }
 }
