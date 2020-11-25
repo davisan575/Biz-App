@@ -2,21 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/logout_action"
-        android:title="LOGOUT"
-        android:icon="@drawable/logout_icon"
-        app:showAsAction="always" />
+    <!--    <item-->
+    <!--        android:id="@+id/logout_action"-->
+    <!--        android:title="LOGOUT"-->
+    <!--        android:icon="@drawable/logout_icon"-->
+    <!--        app:showAsAction="always" />-->
     <item
         android:id="@+id/share_action"
         android:title="SHARE"
         android:icon="@drawable/share_icon"
         app:showAsAction="always"/>
-<!--    <item-->
-<!--        android:id="@+id/add_friend_action"-->
-<!--        android:title="ADD"-->
-<!--        android:icon="@drawable/plus_icon"-->
-<!--        app:showAsAction="always"/>-->
+    <item
+        android:id="@+id/add_friend_action"
+        android:title="ADD"
+        android:icon="@drawable/plus_icon"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/friends_list_action"
         android:title="FRIENDS"

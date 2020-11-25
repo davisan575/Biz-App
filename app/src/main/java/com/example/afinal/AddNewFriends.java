@@ -23,20 +23,21 @@ public class AddNewFriends extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_new_friends_activity_layout);
 
-        Toolbar myToolBar = findViewById(R.id.friends_toolbar);
+        Toolbar myToolBar = findViewById(R.id.add_friends_toolbar);
         setSupportActionBar(myToolBar);
         ActionBar ab = getSupportActionBar();
-        ab.setTitle("Search New Connections");
-//        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle("");
+        //        ab.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //set_bottom_bar();
-        getMenuInflater().inflate(R.menu.top_toolbar_menu, menu);
+        getMenuInflater().inflate(R.menu.friends_search_bar_menu, menu);
 
         MenuItem myActionMenuItem = menu.findItem(R.id.search_action);
         SearchView searchView=(SearchView)myActionMenuItem.getActionView();
+        searchView.setQueryHint("Search new connections");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

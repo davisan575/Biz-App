@@ -3,18 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/search_action"
-        android:title="SEARCH"
-        android:icon="@drawable/white_search_icon"
-        app:showAsAction="always|collapseActionView"
+        android:id="@+id/logout_action"
+        android:title="LOGOUT"
+        android:icon="@drawable/white_logout"
         app:itemTextColor="@color/white"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
-    <item
-        android:id="@+id/search_spinner"
-        android:title="FILTER"
-        android:icon="@drawable/white_filter_icon"
-        app:itemTextColor="@color/white"
-        android:textColor="@color/white"
-        app:showAsAction="always"
-        app:actionViewClass="android.widget.Spinner" />
+        app:showAsAction="always" />
 </menu>

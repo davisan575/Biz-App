@@ -8,6 +8,20 @@
     android:transitionName="friends_activity_transition"
     tools:context=".FriendsActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        app:titleTextColor="@color/white"
+        app:subtitleTextColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/friends_search"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/navy_blue"
+        app:theme="@style/TopToolbarIconColor"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/Theme.AppCompat.DayNight">
+    </androidx.appcompat.widget.Toolbar>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
