@@ -28,6 +28,8 @@ public class AddNewFriends extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setTitle("Search New Connections");
 //        ab.setDisplayHomeAsUpEnabled(true);
+
+        // commit comment
     }
 
     @Override
