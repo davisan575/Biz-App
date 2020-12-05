@@ -11,6 +11,9 @@ public class User {
     public String phone;
     public String profilepic;
     public String card;
+    public String education;
+    public String employment;
+    public String hobbies;
     public Object timestamp;
     public User(String email, String fn, String ln, String displayname, String company, String phone, String profilepic, String card) {
         this.firstname=fn;
