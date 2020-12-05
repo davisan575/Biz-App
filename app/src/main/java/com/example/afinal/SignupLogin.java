@@ -49,6 +49,7 @@ public class SignupLogin extends AppCompatActivity {
         loginToolbar = (Toolbar) findViewById(R.id.login_toolbar);
         setSupportActionBar(loginToolbar);
         ActionBar lt = getSupportActionBar();
+        loginToolbar.setTitleTextColor(0xffeeeeee);
         lt.setTitle("Login");
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
@@ -119,4 +120,22 @@ public class SignupLogin extends AppCompatActivity {
                 return false;
             }
         }
+
+    public void ForgotPassword(View view) {
+        if(email.getText().toString().equals("")){
+            Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mAuth.sendPasswordResetEmail(email.getText().toString()).addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(SignupLogin.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(this, new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(SignupLogin.this, "Email sent!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

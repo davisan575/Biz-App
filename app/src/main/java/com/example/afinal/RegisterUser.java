@@ -123,7 +123,7 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
         et_fn = (EditText) findViewById(R.id.add_first_name);
         et_ln = (EditText) findViewById(R.id.add_last_name);
         et_company = (EditText)findViewById(R.id.add_company);
-        et_phonenumber = (EditText) findViewById(R.id.add_company);
+        et_phonenumber = (EditText) findViewById(R.id.add_phone);
         aImg = (ImageView) findViewById(R.id.choose_photo);
         fab_save = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -185,7 +185,7 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
         else {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             final String fileNameInStorage = UUID.randomUUID().toString();
-            String path = "images/" + fileNameInStorage + ".jpg";
+            String path = "Profile_Pictures/" + fileNameInStorage + ".jpg";
             final StorageReference imageRef = storage.getReference(path);
             Log.d("path", path);
             Log.d("imageeUri", imageUri.toString());
