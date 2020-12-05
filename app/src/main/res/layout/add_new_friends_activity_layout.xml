@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:transitionName="add_new_friends_activity_transition"
+    android:background="@color/light_gray_blue"
     tools:context=".AddNewFriends">
 
     <androidx.appcompat.widget.Toolbar
@@ -19,5 +20,12 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/Theme.AppCompat.DayNight">
     </androidx.appcompat.widget.Toolbar>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/add_friends_recylcer_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        app:layout_constraintTop_toBottomOf= "@id/add_friends_toolbar" >
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
