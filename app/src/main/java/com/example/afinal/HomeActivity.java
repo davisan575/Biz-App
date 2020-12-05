@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,12 +26,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -43,10 +49,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    //Attributes for User Profile
+    ImageView mImg;
+    TextView tv_name;
+    TextView tv_email;
+    TextView tv_company;
+    TextView tv_education;
+    TextView tv_employment;
+    TextView tv_hobbies;
+
+    LinearLayout ll_education;
+    LinearLayout ll_employment;
+    LinearLayout ll_hobbies;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -80,11 +100,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View contentView = inflater.inflate(R.layout.activity_personal_details, null, false);
+//        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View contentView = inflater.inflate(R.layout.activity_personal_details, null, false);
         FrameLayout frame = (FrameLayout) findViewById(R.id.main_container);
-        frame.removeAllViews();
-        frame.addView(contentView);
+//        frame.removeAllViews();
+//        frame.addView(contentView);
+        Bundle args=new Bundle();
+        Fragment detailFragment=new ProfileFragment();
+        detailFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_container,detailFragment).addToBackStack(null).commit();
+
+
+//        mImg = (ImageView)findViewById(R.id.profilepic);
+//        tv_name = (TextView) findViewById(R.id.name);
+//        tv_email = (TextView) findViewById(R.id.add_email);
+//        tv_company = (TextView)findViewById(R.id.company);
+//        tv_education = (TextView)findViewById(R.id.user_education);
+//        tv_employment = (TextView)findViewById(R.id.user_employment_details);
+//        tv_hobbies = (TextView)findViewById(R.id.user_hobbies);
+
+        LoadUserData();
 //        ab.setDisplayHomeAsUpEnabled(true);
 
         BottomNavigationView bottomToolbar= findViewById(R.id.bottom_toolbar);
@@ -134,6 +169,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+    }
+
+    private void LoadUserData() {
+
     }
 
     @Override
@@ -210,7 +249,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ImageView iv = findViewById(R.id.small_rory);
+        ImageView iv = findViewById(R.id.profilepic);
         ImageView circularIv = findViewById(R.id.circular_img);
         if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             if (data == null) {
