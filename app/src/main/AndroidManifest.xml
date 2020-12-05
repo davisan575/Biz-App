@@ -17,15 +17,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <activity android:name=".LoginActivity">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterUser"></activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".SignupLogin"
+            android:theme="@style/Theme.Splash" ></activity>
+        <activity android:name=".RegisterUser"
+            android:theme="@style/Theme.Splash" ></activity>
+        <activity android:name=".HomeActivity"
+            android:theme="@style/Theme.Splash" ></activity>
         <activity android:name=".FriendsActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
