@@ -87,7 +87,7 @@ public class SignupLogin extends AppCompatActivity {
                             currentUser = authResult.getUser();
                             if (currentUser.isEmailVerified()) {
                                 Toast.makeText(SignupLogin.this, "Login Succesful.", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignupLogin.this, MainActivity.class));
+                                startActivity(new Intent(SignupLogin.this, HomeActivity.class));
                                 finish();
                             } else {
                                 Toast.makeText(SignupLogin.this, "Please verify your email and login again.", Toast.LENGTH_SHORT).show();

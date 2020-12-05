@@ -66,7 +66,6 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
     EditText et_phonenumber;
     FloatingActionButton fab_save;
 
-    DatabaseReference mRootReference;
     private static final int REQUEST_FOR_CAMERA=0011;
     private static final int OPEN_FILE=0012;
     private Uri imageUri=null;
@@ -180,7 +179,8 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
                     fullname,
                     et_company.getText().toString(),
                     et_phonenumber.getText().toString(),
-                    "default_pic"));
+                    "default_pic",
+                    "default_card"));
         }
         else {
             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -209,8 +209,17 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
                         Uri downloadUri = task.getResult();
                         upload_user.profilepic = fileNameInStorage + ".jpg";
                         Log.d("path url version: ", fileNameInStorage + ".jpg");
-
-                        mRootReference.child(currentUser.getUid()).setValue(upload_user);
+                        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        final DatabaseReference mRootReference = database.getReference("Users");
+                        String fullname = et_fn.getText().toString() + " "+ et_ln.getText().toString();
+                        mRootReference.child(currentUser.getUid()).setValue(new User(et_email.getText().toString(),
+                                et_fn.getText().toString(),
+                                et_ln.getText().toString(),
+                                fullname,
+                                et_company.getText().toString(),
+                                et_phonenumber.getText().toString(),
+                                fileNameInStorage,
+                                "default_card"));
                         finish();
 
 
