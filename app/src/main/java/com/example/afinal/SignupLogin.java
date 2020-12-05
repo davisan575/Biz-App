@@ -4,10 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Patterns;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -24,10 +21,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-public class LoginActivity extends AppCompatActivity {
+public class SignupLogin extends AppCompatActivity {
 
     private Button b;
     private EditText email;
@@ -91,17 +86,17 @@ public class LoginActivity extends AppCompatActivity {
                         public void onSuccess(AuthResult authResult) {
                             currentUser = authResult.getUser();
                             if (currentUser.isEmailVerified()) {
-                                Toast.makeText(LoginActivity.this, "Login Succesful.", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                Toast.makeText(SignupLogin.this, "Login Succesful.", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignupLogin.this, MainActivity.class));
                                 finish();
                             } else {
-                                Toast.makeText(LoginActivity.this, "Please verify your email and login again.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignupLogin.this, "Please verify your email and login again.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }).addOnFailureListener(this, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupLogin.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -109,8 +104,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         public void Register (View view) {
-            Toast.makeText(LoginActivity.this, "Register clicked.", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(LoginActivity.this, RegisterUser.class));
+            Toast.makeText(SignupLogin.this, "Register clicked.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(SignupLogin.this, RegisterUser.class));
         }
 
         public boolean ContentCheck(){
