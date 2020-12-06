@@ -78,20 +78,34 @@ public class ProfileFragment extends Fragment {
                 Log.d("onDataChange", u.displayname);
                 tv_email.setText(u.email);
                 tv_company.setText(u.company);
-                if(u.education != null)
+                if(u.education != null && u.education != "")
                 {
                     ll_education.setVisibility(View.VISIBLE);
                     tv_education.setText(u.education);
+                    Log.d("Education: ",u.education);
                 }
-                if(u.employment != null)
+                if(u.employment != null && u.employment!= "")
                 {
                     ll_employment.setVisibility(View.VISIBLE);
                     tv_employment.setText(u.employment);
                 }
-                if(u.hobbies != null)
+                if(u.hobbies != null && u.hobbies != "")
                 {
                     ll_hobbies.setVisibility(View.VISIBLE);
                     tv_hobbies.setText(u.hobbies);
+                }
+
+                if(tv_education.getText().toString().equals(""))
+                {
+                    ll_education.setVisibility(View.GONE);
+                }
+                if(tv_employment.getText().toString().equals(""))
+                {
+                    ll_employment.setVisibility(View.GONE);
+                }
+                if(tv_hobbies.getText().toString().equals(""))
+                {
+                    ll_hobbies.setVisibility(View.GONE);
                 }
 
                 StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/"+u.profilepic+".jpg");
