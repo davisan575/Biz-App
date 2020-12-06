@@ -56,108 +56,130 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <LinearLayout
-        app:layout_constraintBottom_toBottomOf="@id/header"
-        android:id="@+id/education"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="25dp"
-        android:paddingTop="25dp"
-        android:layout_marginLeft="10dp"
-        android:weightSum="8">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/navy_blue"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:text="Education: "
-            android:layout_weight="3"/>
-        <TextView
-            android:layout_width="0dp"
-            android:id="@+id/user_education"
-            android:layout_height="wrap_content"
-            android:layout_weight="5" />
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:padding="5dp"
-        android:id="@+id/divider1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/education"
-        android:layout_height="1dp"
-        android:background="@color/navy_blue" />
-    <LinearLayout
-        app:layout_constraintBottom_toBottomOf="@id/divider1"
-        android:id="@+id/employment"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginLeft="10dp"
-        android:paddingBottom="25dp"
-        android:paddingTop="25dp"
-        android:weightSum="8">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/navy_blue"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:text="Employment: "
-            android:layout_weight="3"/>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/user_employment_details"
-            android:layout_weight="5" />
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:padding="5dp"
-        android:id="@+id/divider2"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/employment"
-        android:layout_height="1dp"
-        android:background="@color/navy_blue" />
-    <LinearLayout
-        app:layout_constraintBottom_toBottomOf="@id/divider2"
-        android:visibility="gone"
-        android:id="@+id/hobbies"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:orientation="horizontal"
-        android:paddingBottom="25dp"
-        android:paddingTop="25dp"
-        android:weightSum="8">
-        <TextView
-            android:id="@+id/edittxtview"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/navy_blue"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:text="Hobbies: "
-            android:layout_weight="3"/>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/user_hobbies"
-            android:layout_weight="5" />
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:padding="5dp"
-        android:id="@+id/divider3"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/hobbies"
-        android:layout_height="1dp"
-        android:background="@color/navy_blue" />
 
-</LinearLayout>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/education"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="25dp"
+            android:paddingTop="25dp"
+            android:layout_marginLeft="10dp"
+            android:weightSum="8">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/navy_blue"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:text="Education: "
+                android:layout_weight="3"/>
+            <TextView
+                android:layout_width="0dp"
+                android:id="@+id/user_education"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:padding="5dp"
+            android:id="@+id/divider1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/education"
+            android:layout_height="1dp"
+            android:background="@color/navy_blue" />
+        <LinearLayout
+            app:layout_constraintBottom_toBottomOf="@id/divider1"
+            android:id="@+id/employment"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="10dp"
+            android:paddingBottom="25dp"
+            android:paddingTop="25dp"
+            android:weightSum="8">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/navy_blue"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:text="Employment: "
+                android:layout_weight="3"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/user_employment_details"
+                android:layout_weight="5" />
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:padding="5dp"
+                        android:id="@+id/divider2"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        app:layout_constraintBottom_toBottomOf="@id/employment"
+                        android:layout_height="1dp"
+                        android:background="@color/navy_blue" />
+                    <LinearLayout
+                        app:layout_constraintBottom_toBottomOf="@id/divider2"
+                        android:visibility="gone"
+                        android:id="@+id/hobbies"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="horizontal"
+                        android:paddingBottom="25dp"
+                        android:paddingTop="25dp"
+                        android:weightSum="8">
+                        <TextView
+                            android:id="@+id/edittxtview"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/navy_blue"
+                            android:textAllCaps="true"
+                            android:textStyle="bold"
+                            android:text="Hobbies: "
+                            android:layout_weight="3"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/user_hobbies"
+                            android:layout_weight="5" />
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:padding="5dp"
+                        android:id="@+id/divider3"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        app:layout_constraintBottom_toBottomOf="@id/hobbies"
+                        android:layout_height="1dp"
+                        android:background="@color/navy_blue" />
+                    <ImageView
+                        android:layout_width="300dp"
+                        android:layout_height="175dp"
+                        android:id="@+id/profile_business_card"
+                        android:layout_marginTop="20dp"
+                        android:scaleType="fitXY"
+                        android:layout_gravity="center"
+                        android:layout_margin="20dp"
+                        app:layout_constraintLeft_toLeftOf="@id/header"
+                        app:layout_constraintRight_toRightOf="@id/header"
+                        app:layout_constraintTop_toBottomOf="@id/divider3"
+                        android:src="@drawable/default_card"/>
+        </LinearLayout>
+    </ScrollView>
+    </LinearLayout>

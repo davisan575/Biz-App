@@ -52,6 +52,7 @@ public class ProfileFragment extends Fragment {
 
     //Attributes for User Profile
     ImageView mImg;
+    ImageView mCardImg;
     TextView tv_name;
     TextView tv_email;
     TextView tv_company;
@@ -77,6 +78,7 @@ public class ProfileFragment extends Fragment {
         v = inflater.inflate(R.layout.activity_personal_details, container, false);
 
         mImg = (ImageView) v.findViewById(R.id.profilepic);
+        mCardImg = (ImageView) v.findViewById(R.id.profile_business_card);
         tv_name = (TextView) v.findViewById(R.id.name);
         tv_email = (TextView) v.findViewById(R.id.email);
         tv_company = (TextView) v.findViewById(R.id.company);
@@ -132,12 +134,18 @@ public class ProfileFragment extends Fragment {
                 }
 
                 StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/"+u.profilepic+".jpg");
-                StorageReference cardPathReference = FirebaseStorage.getInstance().getReference("Business_Cards/"+u.card+".jpg");
                 //StorageReference profReference = FirebaseStorage.getInstance().getReference()("images/")
                 profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         Picasso.get().load(uri).into(mImg);
+                    }
+                });
+                StorageReference cardPathReference = FirebaseStorage.getInstance().getReference("Business_Cards/"+u.card+".jpg");
+                cardPathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(mCardImg);
                     }
                 });
             }
