@@ -72,37 +72,85 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
     public String saveEmail;
     public String saveProfilepic;
     public String saveCard;
+    public chosen_image image_type = chosen_image.NONE;
+
+    enum chosen_image {
+        NONE,
+        PROFILE,
+        CARD_FRONT,
+        CARD_BACK
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_FOR_CAMERA && resultCode == RESULT_OK) {
-            if(cardUri==null)
-            {
-                Toast.makeText(this, "Error taking photo.", Toast.LENGTH_SHORT).show();
-                return;
+
+
+            switch (image_type) {
+                case PROFILE:
+                    if(profilepicUri==null)
+                    {
+                        Toast.makeText(this, "Error taking photo.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    try {
+                        InputStream inputStream = this.getContentResolver().openInputStream(profilepicUri);
+                        BitmapFactory bitmapFactory = new BitmapFactory();
+                        Bitmap bm = bitmapFactory.decodeStream(inputStream);
+                        editProfilePic.setImageBitmap(bm);
+                    }
+                    catch(FileNotFoundException e){
+                        e.printStackTrace();
+                    }
+                    //uploadImage();
+                    break;
+                case CARD_FRONT:
+                    if(cardUri==null)
+                    {
+                        Toast.makeText(this, "Error taking photo.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    try {
+                        InputStream inputStream = this.getContentResolver().openInputStream(cardUri);
+                        BitmapFactory bitmapFactory = new BitmapFactory();
+                        Bitmap bm = bitmapFactory.decodeStream(inputStream);
+                        editCard.setImageBitmap(bm);
+                    }
+                    catch(FileNotFoundException e){
+                        e.printStackTrace();
+                    }
+                    //uploadImage();
+                    break;
             }
-            try {
-                InputStream inputStream = this.getContentResolver().openInputStream(cardUri);
-                BitmapFactory bitmapFactory = new BitmapFactory();
-                Bitmap bm = bitmapFactory.decodeStream(inputStream);
-                editCard.setImageBitmap(bm);
-            }
-            catch(FileNotFoundException e){
-                e.printStackTrace();
-            }
-            //uploadImage();
             return;
         }
         if(requestCode==OPEN_FILE && resultCode==RESULT_OK) {
-            cardUri = data.getData();
-            File fileLocation = new File(String.valueOf(cardUri)); //file path, which can be String, or Uri
+            switch (image_type) {
+                case PROFILE:
+                    profilepicUri = data.getData();
+                    break;
+                case CARD_FRONT:
+                    cardUri = data.getData();
+                    break;
+            }
+            //File fileLocation = new File(String.valueOf(cardUri)); //file path, which can be String, or Uri
             //Picasso.get().load(fileLocation).into(aImg);
             try {
-                InputStream inputStream = this.getContentResolver().openInputStream(cardUri);
-                BitmapFactory bitmapFactory = new BitmapFactory();
-                Bitmap bm = bitmapFactory.decodeStream(inputStream);
-                editCard.setImageBitmap(bm);
+                switch (image_type) {
+                    case PROFILE:
+                        InputStream inputStreamProfile = this.getContentResolver().openInputStream(profilepicUri);
+                        BitmapFactory bitmapFactoryProfile = new BitmapFactory();
+                        Bitmap bmProfile = bitmapFactoryProfile.decodeStream(inputStreamProfile);
+                        editProfilePic.setImageBitmap(bmProfile);
+                        break;
+                    case CARD_FRONT:
+                        InputStream inputStream = this.getContentResolver().openInputStream(cardUri);
+                        BitmapFactory bitmapFactory = new BitmapFactory();
+                        Bitmap bm = bitmapFactory.decodeStream(inputStream);
+                        editCard.setImageBitmap(bm);
+                        break;
+                }
             }
             catch(FileNotFoundException e){
                 e.printStackTrace();
@@ -121,6 +169,9 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        cardUploaded = false;
+        profileUploaded = false;
 
         edit_fn = (EditText) findViewById(R.id.edit_first_name);
         edit_ln = (EditText) findViewById(R.id.edit_last_name);
@@ -234,6 +285,15 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         if(cardUploaded == false) {
             Log.d("imageUri", "Equals null");
             write_user.card = saveCard;
+            if(profileUploaded == true)
+            {
+                RunProfilePicUpload(write_user);
+            }
+            else
+            {
+                ref.setValue(write_user);
+                finish();
+            }
         }
         else {
             FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -260,13 +320,11 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                     if (task.isSuccessful()) {
                         cardUploaded = true;
                         Uri downloadUri = task.getResult();
-                        Log.d("path url version: ", fileNameInStorage + ".jpg");
                         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference local_ref = database.getReference("Users/"+currentUser.getUid());
-                        local_ref.setValue(write_user);
+                        //DatabaseReference local_ref = database.getReference("Users/"+currentUser.getUid());
+                        //local_ref.setValue(write_user);
+                        RunProfilePicUpload(write_user);
                         finish();
-
-
                     } else {
                         Toast.makeText(EditProfileActivity.this, "issue", Toast.LENGTH_SHORT).show();
 
@@ -281,8 +339,48 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
 
     }
 
+    public void RunProfilePicUpload(User write_user)
+    {
+        final User u = write_user;
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        final String fileNameInStorage = UUID.randomUUID().toString();
+        String path = "Profile_Pictures/" + fileNameInStorage + ".jpg";
+        final StorageReference imageRef = storage.getReference(path);
+        Log.d("path", path);
+        UploadTask uploadTask = imageRef.putFile(profilepicUri);
+        write_user.profilepic = fileNameInStorage;
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return imageRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    cardUploaded = true;
+                    Uri downloadUri = task.getResult();
+                    Log.d("path url version: ", fileNameInStorage + ".jpg");
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference local_ref = database.getReference("Users/"+currentUser.getUid());
+                    local_ref.setValue(u);
+                    finish();
+                } else {
+                    Toast.makeText(EditProfileActivity.this, "issue", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+    }
+
     public void UpdateCard(View view) {
-        cardUploaded = true;
+        image_type = chosen_image.CARD_FRONT;
         PopupMenu popup = new PopupMenu(this, view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.popup, popup.getMenu());
@@ -334,14 +432,30 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
     }
 
     private void takePhoto(){
-        cardUploaded = true;
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-        cardUri = getContentResolver().insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        switch (image_type) {
+            case PROFILE:
+                profilepicUri = getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                break;
+            case CARD_FRONT:
+                profilepicUri = getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                break;
+        }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, cardUri);
+        switch (image_type) {
+            case PROFILE:
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, profilepicUri);
+                profileUploaded = true;
+                break;
+            case CARD_FRONT:
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, cardUri);
+                cardUploaded = true;
+                break;
+        }
         Intent chooser=Intent.createChooser(intent,"Select a Camera App.");
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(chooser, REQUEST_FOR_CAMERA);}
@@ -361,5 +475,14 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
             default:
                 return false;
         }
+    }
+
+    public void ChooseProfilePhoto(View view) {
+        image_type = chosen_image.PROFILE;
+        PopupMenu popup = new PopupMenu(this, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.popup, popup.getMenu());
+        popup.setOnMenuItemClickListener(this);
+        popup.show();
     }
 }

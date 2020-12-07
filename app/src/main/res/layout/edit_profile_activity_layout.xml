@@ -22,6 +22,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:padding="15dp"
+                android:onClick="ChooseProfilePhoto"
                 android:id="@+id/edit_profilepic"></ImageView>
 
             <EditText
