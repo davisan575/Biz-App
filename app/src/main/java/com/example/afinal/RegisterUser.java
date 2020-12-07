@@ -90,6 +90,7 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
             }
             catch(FileNotFoundException e){
                 e.printStackTrace();
+                Toast.makeText(this, "Error. File not found.", Toast.LENGTH_SHORT).show();
             }
             //uploadImage();
             return;
