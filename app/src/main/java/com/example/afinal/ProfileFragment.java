@@ -133,6 +133,9 @@ public class ProfileFragment extends Fragment {
                     ll_hobbies.setVisibility(View.GONE);
                 }
 
+                Log.d("profile pic: ", u.profilepic);
+                Log.d("card pic: ", u.card);
+
                 StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/"+u.profilepic+".jpg");
                 //StorageReference profReference = FirebaseStorage.getInstance().getReference()("images/")
                 profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
