@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,9 @@ public class EditProfileActivity extends AppCompatActivity {
     EditText edit_employment;
     EditText edit_hobbies;
 
+    ImageView editProfilePic;
+    ImageView editCard;
+
     public Object saveTimestamp;
     public String saveEmail;
     public String saveProfilepic;
@@ -55,6 +59,9 @@ public class EditProfileActivity extends AppCompatActivity {
         edit_education = (EditText) findViewById(R.id.edit_education);
         edit_employment = (EditText) findViewById(R.id.edit_employment);
         edit_hobbies = (EditText) findViewById(R.id.edit_hobbies);
+
+        editCard = (ImageView) findViewById(R.id.edit_business_card);
+        editProfilePic = (ImageView) findViewById(R.id.edit_profilepic);
 
         // Get a reference to our posts
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -92,15 +99,22 @@ public class EditProfileActivity extends AppCompatActivity {
                     edit_hobbies.setText(u.hobbies);
                 }
 
-//                StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/"+u.profilepic+".jpg");
-//                StorageReference cardPathReference = FirebaseStorage.getInstance().getReference("Business_Cards/"+u.card+".jpg");
-//                //StorageReference profReference = FirebaseStorage.getInstance().getReference()("images/")
-//                profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//                        Picasso.get().load(uri).into(mImg);
-//                    }
-//                });
+                StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/"+u.profilepic+".jpg");
+                StorageReference cardPathReference = FirebaseStorage.getInstance().getReference("Business_Cards/"+u.card+".jpg");
+
+                profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(editProfilePic);
+                    }
+                });
+
+                cardPathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(editCard);
+                    }
+                });
             }
 
             @Override
@@ -146,6 +160,10 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         ref.setValue(write_user);
         finish();
+
+    }
+
+    public void UpdateCard(View view) {
 
     }
 }
