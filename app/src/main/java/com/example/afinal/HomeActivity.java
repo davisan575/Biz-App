@@ -232,41 +232,41 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void LoadNewProfilePhoto(View v)
-    {
-        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        getIntent.setType("image/*");
+//    public void LoadNewProfilePhoto(View v)
+//    {
+//        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//        getIntent.setType("image/*");
+//
+//        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        pickIntent.setType("image/*");
+//
+//        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+//        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+//
+//        startActivityForResult(chooserIntent, PICK_IMAGE);
+//    }
 
-        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        pickIntent.setType("image/*");
-
-        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
-
-        startActivityForResult(chooserIntent, PICK_IMAGE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        ImageView iv = findViewById(R.id.profilepic);
-        ImageView circularIv = findViewById(R.id.circular_img);
-        if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK) {
-            if (data == null) {
-                //Display an error
-                return;
-            }
-            try {
-                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
-                //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
-                BitmapFactory bitmapFactory = new BitmapFactory();
-                Bitmap bm = bitmapFactory.decodeStream(inputStream);
-                iv.setImageBitmap(bm);
-                circularIv.setImageBitmap(bm);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        ImageView iv = findViewById(R.id.profilepic);
+//        ImageView circularIv = findViewById(R.id.circular_img);
+//        if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+//            if (data == null) {
+//                //Display an error
+//                return;
+//            }
+//            try {
+//                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
+//                //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
+//                BitmapFactory bitmapFactory = new BitmapFactory();
+//                Bitmap bm = bitmapFactory.decodeStream(inputStream);
+//                iv.setImageBitmap(bm);
+//                circularIv.setImageBitmap(bm);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//    }
 }
