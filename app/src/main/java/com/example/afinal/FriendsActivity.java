@@ -1,20 +1,8 @@
 package com.example.afinal;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.ShareActionProvider;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.view.MenuItemCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,9 +14,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -42,18 +39,18 @@ import java.util.List;
 public class FriendsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private AddFriends_RecyclerAdapter my_AddFriends_RecyclerAdapter;
+    private Friends_RecyclerAdapter my_Friends_RecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friends_activity_layout);
 
-        Toolbar myToolBar=findViewById(R.id.friends_search);
+        Toolbar myToolBar = findViewById(R.id.friends_search);
         setSupportActionBar(myToolBar);
-        ActionBar ab=getSupportActionBar();
+        ActionBar ab = getSupportActionBar();
         ab.setTitle("");
-//        ab.setDisplayHomeAsUpEnabled(true);
+        //        ab.setDisplayHomeAsUpEnabled(true);
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -63,19 +60,19 @@ public class FriendsActivity extends AppCompatActivity {
         mLayoutManager.scrollToPosition(0);
         recyclerView.setLayoutManager(mLayoutManager);
 
-        my_AddFriends_RecyclerAdapter = new AddFriends_RecyclerAdapter(recyclerView, getApplicationContext());
-        recyclerView.setAdapter(my_AddFriends_RecyclerAdapter);
+        my_Friends_RecyclerAdapter = new Friends_RecyclerAdapter(recyclerView, getApplicationContext());
+        recyclerView.setAdapter(my_Friends_RecyclerAdapter);
 
-        my_AddFriends_RecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
+        my_Friends_RecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
 
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
-                String currUser = my_AddFriends_RecyclerAdapter.getItem(position).getPostKey_name();
+                String currUser = my_Friends_RecyclerAdapter.getItem(position).getPostKey_name();
                 final DatabaseReference userRef= db.getReference("Users").child(currUser);
 
                 final FirebaseStorage storage = FirebaseStorage.getInstance();
-                final AddFriends_RecyclerAdapter.User u =my_AddFriends_RecyclerAdapter.getItem(position);
+                final Friends_RecyclerAdapter.User u =my_Friends_RecyclerAdapter.getItem(position);
 
                 String busCard=u.card;
                 final StorageReference cardRef = storage.getReference("Business_Cards").child(busCard + ".jpg");
@@ -91,12 +88,17 @@ public class FriendsActivity extends AppCompatActivity {
                         picRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri picURI) {
-                                Intent intent = new Intent(getApplicationContext(), UserDetailActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), FriendsDetailActivity.class);
                                 intent.putExtra("card", cardURI.toString());
                                 intent.putExtra("profilepic", picURI.toString());
                                 intent.putExtra("phone", u.phone);
                                 intent.putExtra("displayname", u.displayname);
+                                intent.putExtra("education", u.education);
                                 intent.putExtra("email", u.email);
+                                intent.putExtra("hobbies", u.hobbies);
+                                intent.putExtra("education", u.education);
+                                intent.putExtra("employment", u.employment);
+                                intent.putExtra("company", u.company);
                                 startActivity(intent);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -123,21 +125,21 @@ public class FriendsActivity extends AppCompatActivity {
 
         MenuItem myActionMenuItem = menu.findItem(R.id.search_action);
         SearchView searchView=(SearchView)myActionMenuItem.getActionView();
-        searchView.setQueryHint("Search friends");
+        searchView.setQueryHint("Search new connections");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
 //                Toast toast=Toast.makeText(getApplicationContext(),"Query Text="+query,Toast.LENGTH_SHORT);
 //                toast.show();
-                my_AddFriends_RecyclerAdapter.getFilter().filter(query);
+                my_Friends_RecyclerAdapter.getFilter().filter(query);
                 return true;
             }
             @Override
             public boolean onQueryTextChange(String newText) {
 //                Toast toast=Toast.makeText(getApplicationContext(),newText,Toast.LENGTH_SHORT);
 //                toast.show();
-                my_AddFriends_RecyclerAdapter.getFilter().filter(newText);
+                my_Friends_RecyclerAdapter.getFilter().filter(newText);
                 return true;
             }
         });
@@ -160,7 +162,7 @@ public class FriendsActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(FriendsActivity.this, "Search filter selected: "
                         + parent.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
-                my_AddFriends_RecyclerAdapter.getFilterType(parent.getSelectedItem().toString());
+                my_Friends_RecyclerAdapter.getFilterType(parent.getSelectedItem().toString());
             }
 
             @Override
@@ -168,22 +170,10 @@ public class FriendsActivity extends AppCompatActivity {
 
             }
         });
+
 //        MenuItem shareItem = menu.findItem(R.id.share_action);
 //        ShareActionProvider myShareActionProvider =(ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
 //        myShareActionProvider.setShareIntent(chooser);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-//            case R.id.settings_action:
-//                /*Intent intent=new Intent(this,ViewPagerActivity.class);
-//                startActivity(intent);*/
-//                Toast.makeText(this, "SEttings", Toast.LENGTH_SHORT).show();
-//                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        return super.onCreateOptionsMenu(menu);
     }
 }
