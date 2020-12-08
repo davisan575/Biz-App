@@ -1,6 +1,9 @@
 package com.example.afinal;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +31,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.snapshot.ChildrenNode;
 import com.google.firebase.storage.FirebaseStorage;
@@ -42,7 +46,7 @@ import java.util.List;
 
 //import java.net.URI;
 
-public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_RecyclerAdapter.ViewHolder>
+public class Friends_RecyclerAdapter extends RecyclerView.Adapter<Friends_RecyclerAdapter.ViewHolder>
         implements Filterable
 {
     public void getFilterType(String type) {
@@ -136,22 +140,34 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
         };
     }
 
-    static class User{
-        public String postKey_name;
+    static class User {
+        public String email;
+        public String firstname;
+        public String lastname;
         public String displayname;
+        public String postKey_name;
+        public String company;
+        public String phone;
         public String profilepic;
         public String card;
-        public String email;
-        public String phone;
-        public User(String postKey_name, String display_name, String email, String phone, String profilepic, String card) {
+        public String education;
+        public String employment;
+        public String hobbies;
+        public Object timestamp;
+        public User(String postKey_name, String email, String displayname, String employment, String education,
+                    String company, String phone, String profilepic, String card, String hobbies) {
             this.postKey_name=postKey_name;
-            this.displayname=display_name;
+            this.displayname=displayname;
+            this.education=education;
             this.email=email;
             this.phone=phone;
+            this.company=company;
+            this.employment=employment;
             this.profilepic=profilepic;
             this.card=card;
+            this.hobbies=hobbies;
+            this.timestamp= ServerValue.TIMESTAMP;
         }
-
         public String getPostKey_name() {return postKey_name;}
     }
 
@@ -170,7 +186,7 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
 
     DatabaseReference friendsNode = allPostsRef.child(currentUser.getUid()).child("friends");
 
-    public AddFriends_RecyclerAdapter(RecyclerView recyclerView, Context context){
+    public Friends_RecyclerAdapter(RecyclerView recyclerView, Context context){
         usersList =new ArrayList<>();
         users_filtered =new ArrayList<>();
         friendsList =new ArrayList<>();
@@ -199,20 +215,24 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
         allPostsRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-                if (!friendsList.contains(dataSnapshot.getKey()) &&
-                        !dataSnapshot.getKey().equals(currentUser.getUid())) {
+                if (friendsList.contains(dataSnapshot.getKey())) {
                     User newUser = new User(dataSnapshot.getKey(),
-                            dataSnapshot.child("displayname").getValue().toString(),
                             dataSnapshot.child("email").getValue().toString(),
+                            dataSnapshot.child("displayname").getValue().toString(),
+                            dataSnapshot.child("employment").getValue().toString(),
+                            dataSnapshot.child("education").getValue().toString(),
+                            dataSnapshot.child("company").getValue().toString(),
                             dataSnapshot.child("phone").getValue().toString(),
                             dataSnapshot.child("profilepic").getValue().toString(),
-                            dataSnapshot.child("card").getValue().toString());
+                            dataSnapshot.child("card").getValue().toString(),
+                            dataSnapshot.child("hobbies").getValue().toString());
+
 //                Log.d("********SNAPSHOT NAME ", dataSnapshot.child("displayname").getValue().toString());
 //                Log.d("*******POSTKEY NAME ", dataSnapshot.getKey());
                     usersList.add(newUser);
                     users_filtered.add(newUser);
 //                MyRecyclerAdapter.this.notifyItemInserted(moviesList.size()-1);
-                    AddFriends_RecyclerAdapter.this.notifyItemInserted(users_filtered.size() - 1);
+                    Friends_RecyclerAdapter.this.notifyItemInserted(users_filtered.size() - 1);
                     r.scrollToPosition(users_filtered.size() - 1);
                 }
             }
@@ -227,17 +247,17 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
                 for(int i=0; i < getFullItemCount(); i++) {
                     if (usersList.get(i).getPostKey_name().equals(snapshot.getKey())) {
                         usersList.remove(i);
-                        AddFriends_RecyclerAdapter.this.notifyItemRemoved(i);
-                        AddFriends_RecyclerAdapter.this.notifyItemRangeChanged(i, getFullItemCount());
-                        AddFriends_RecyclerAdapter.this.notifyDataSetChanged();
+                        Friends_RecyclerAdapter.this.notifyItemRemoved(i);
+                        Friends_RecyclerAdapter.this.notifyItemRangeChanged(i, getFullItemCount());
+                        Friends_RecyclerAdapter.this.notifyDataSetChanged();
                     }
                 }
                 for(int i=0; i < getItemCount(); i++) {
                     if (users_filtered.get(i).getPostKey_name().equals(snapshot.getKey())) {
                         users_filtered.remove(i);
-                        AddFriends_RecyclerAdapter.this.notifyItemRemoved(i);
-                        AddFriends_RecyclerAdapter.this.notifyItemRangeChanged(i, getItemCount());
-                        AddFriends_RecyclerAdapter.this.notifyDataSetChanged();
+                        Friends_RecyclerAdapter.this.notifyItemRemoved(i);
+                        Friends_RecyclerAdapter.this.notifyItemRangeChanged(i, getItemCount());
+                        Friends_RecyclerAdapter.this.notifyDataSetChanged();
                     }
                 }
             }
@@ -261,7 +281,7 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view, parent,false);
+        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.friend_card_view, parent,false);
         final ViewHolder vh = new ViewHolder(v);
         v.setOnClickListener(new View.OnClickListener() {
 
@@ -285,23 +305,48 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
             holder.uref.removeEventListener(holder.urefListener);
         }
 
-        if (!friendsList.contains(u.getPostKey_name())) {
+        if (friendsList.contains(u.getPostKey_name())) {
 
-            Log.d("****NOT IN FRIENDS LIST", u.getPostKey_name());
-            if (u.postKey_name.equals(currentUser.getUid())) {
-                holder.add_friend_v.setVisibility(View.INVISIBLE);
-            } else {
-                holder.add_friend_v.setOnClickListener(new View.OnClickListener() {
+//            Log.d("****NOT IN FRIENDS LIST", u.getPostKey_name());
+//            if (u.postKey_name.equals(currentUser.getUid())) {
+//                holder.delete_friend_v.setVisibility(View.INVISIBLE);
+//            } else {
+                holder.delete_friend_v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DatabaseReference currUser = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
-                        DatabaseReference friendsPath = currUser.child("friends");
-                        friendsPath.child(users_filtered.get(position).postKey_name).setValue(true);
-                        holder.add_friend_v.setVisibility(View.INVISIBLE);
-                        Toast.makeText(mCtx, u.displayname + " has been added to your friends", Toast.LENGTH_LONG).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle("Remove " + u.displayname + " from your friends list?");
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DatabaseReference currUser = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
+                                DatabaseReference friendsPath = currUser.child("friends");
+                                friendsPath.child(users_filtered.get(position).postKey_name).removeValue();
+                                holder.delete_friend_v.setVisibility(View.INVISIBLE);
+                                Toast.makeText(mCtx, u.displayname + " has been deleted from your friends", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        builder.create().show();
                     }
                 });
-            }
+//            }
+
+//            holder.delete_friend_v.setOnClickListener(new View.OnClickListener() {
+//
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(mCtx, FriendsActivity.class);
+//                    intent.putExtra("position", position);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    mCtx.startActivity(intent);
+//                }
+//            });
 
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             String postKey_name = u.postKey_name;
@@ -348,16 +393,16 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public ImageView business_v;
-        public ImageView add_friend_v;
+        public ImageView delete_friend_v;
         public TextView name_v;
         DatabaseReference uref;
         ValueEventListener urefListener;
 
         public ViewHolder(View v){
             super(v);
-            business_v = v.findViewById(R.id.card_business);
-            add_friend_v=v.findViewById(R.id.card_add_friend);
-            name_v=v.findViewById(R.id.card_name);
+            business_v = v.findViewById(R.id.friend_card_business);
+            delete_friend_v=v.findViewById(R.id.friend_card_delete_friend);
+            name_v=v.findViewById(R.id.friend_card_name);
         }
     }
 }

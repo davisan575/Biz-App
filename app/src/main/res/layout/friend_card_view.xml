@@ -20,28 +20,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
         <ImageView
-            android:id="@+id/card_add_friend"
+            android:id="@+id/friend_card_delete_friend"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="end"
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
-            android:src="@drawable/add_friend"
+            android:src="@drawable/delete_friend"
             android:textAppearance="?android:textAppearanceLarge" />
+<!--            android:onClick="delete_friend" /> -->
         <TextView
-            android:id="@+id/card_name"
+            android:id="@+id/friend_card_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:text="NAME GOES HERE"
             android:textStyle="bold"/>
         <ImageView
-            android:id="@+id/card_business"
+            android:id="@+id/friend_card_business"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:src="@drawable/default_card"/>

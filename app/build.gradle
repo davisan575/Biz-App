@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.firebase:geofire-android:3.0.0'
+    implementation 'com.google.android.gms:play-services-basement:17.5.0'
     implementation platform('com.google.firebase:firebase-bom:26.1.0')
 
 

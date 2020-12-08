@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,10 +31,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -131,13 +140,70 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 ActivityOptionsCompat optionsCompat;
                 switch (item.getItemId()) {
                     case R.id.share_action:
-                        intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_TEXT,"Hello World!");
-                        Intent chooser = Intent.createChooser(intent, "Share via");
-                        if (intent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(chooser);
-                        }
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference ref = database.getReference("Users/"+currentUser.getUid());
+                        ref.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                User u = snapshot.getValue(User.class);
+//                                StringBuilder sb = new StringBuilder();
+//                                sb.append("Hello! It was lovely connecting with you today.");
+//                                sb.append('\n');
+//                                sb.append('\n');
+//                                sb.append("You can find my contact information below:");
+//                                sb.append('\n');
+//                                sb.append("Name : ");
+//                                sb.append(u.displayname);
+//                                sb.append('\n');
+//                                sb.append("Email : ");
+//                                sb.append(u.email);
+//                                sb.append('\n');
+//                                sb.append("Phone : ");
+//                                sb.append(u.phone);
+//                                sb.append('\n');
+//                                sb.append("Current Employment : ");
+//                                sb.append(u.employment);
+//                                sb.append('\n');
+//                                sb.append('\n');
+//                                sb.append("Download Biz-App to find more connections!");
+//
+//                                Intent intent = new Intent(Intent.ACTION_SEND);
+//                                intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
+//                                intent.setType("text/plain");
+//                                Intent chooser = Intent.createChooser(intent, "Share via");
+//                                if (intent.resolveActivity(getPackageManager()) != null) {
+//                                    startActivity(chooser);
+//                                }
+                                String cardName = u.card;
+                                Log.d("card name", u.card);
+                                FirebaseStorage storage = FirebaseStorage.getInstance();
+                                StorageReference cardRef = storage.getReference("Business_Cards").child(cardName + ".jpg");
+                                cardRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri picURI) {
+                                        Intent intent = new Intent(Intent.ACTION_SEND);
+//                                        intent.putExtra(Intent.EXTRA_TEXT, "Hello! It was nice to connect with you. " +
+//                                                "Feel free to contact me via my information below.");
+//                                        intent.setType("text/plain");
+                                        intent.putExtra(Intent.EXTRA_STREAM, picURI);
+                                        intent.setType("image/jpeg");
+//                                        intent.putExtra(Intent.EXTRA_TEXT, "Download Biz-App to find more connections!");
+//                                        intent.setType("text/plain");
+                                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                                        startActivity(intent);
+                                        Intent chooser = Intent.createChooser(intent, "Share via");
+                                        if (intent.resolveActivity(getPackageManager()) != null) {
+                                            startActivity(chooser);
+                                        }
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
                         Log.d("bottom bar", "share action");
                         return true;
                     case R.id.add_friend_action:
