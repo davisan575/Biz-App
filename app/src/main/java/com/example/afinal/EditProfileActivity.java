@@ -323,7 +323,15 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         final FirebaseDatabase database = FirebaseDatabase.getInstance();
                         //DatabaseReference local_ref = database.getReference("Users/"+currentUser.getUid());
                         //local_ref.setValue(write_user);
-                        RunProfilePicUpload(write_user);
+                        if(profileUploaded == true)
+                        {
+                            RunProfilePicUpload(write_user);
+                        }
+                        else
+                        {
+                            ref.setValue(write_user);
+                            finish();
+                        }
                         finish();
                     } else {
                         Toast.makeText(EditProfileActivity.this, "issue", Toast.LENGTH_SHORT).show();

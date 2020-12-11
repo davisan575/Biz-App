@@ -110,6 +110,7 @@ public class GeolocationRecyclerAdapter
         String userKey = keyList.get(position);
         final User u = key_to_User.get(keyList.get(position));
         String card_name = u.card;
+        holder.name_v.setText(u.displayname);
         final StorageReference cardRef = storage.getReference("Business_Cards").child(card_name + ".jpg");
         cardRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
