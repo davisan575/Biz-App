@@ -43,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -54,22 +55,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     Toolbar myToolBar;
     NavigationView navigationView;
     DrawerLayout drawerLayout;
-    public static final int PICK_IMAGE = 1;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-
-    //Attributes for User Profile
-    ImageView mImg;
-    TextView tv_name;
-    TextView tv_email;
-    TextView tv_company;
-    TextView tv_education;
-    TextView tv_employment;
-    TextView tv_hobbies;
-
-    LinearLayout ll_education;
-    LinearLayout ll_employment;
-    LinearLayout ll_hobbies;
+    ImageView circImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +68,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         navigationView.setNavigationItemSelectedListener(this);
+
         myToolBar=findViewById(R.id.top_toolbar);
 
         // Initialize Firebase Auth
@@ -95,38 +84,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-//                Toast toast=Toast.makeText(MainActivity.this,"NavigationDrawer Closed",Toast.LENGTH_SHORT);
-//                toast.show();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerClosed(drawerView);
-//                Toast toast=Toast.makeText(MainActivity.this,"NavigationDrawer Opened",Toast.LENGTH_SHORT);
-//                toast.show();
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
-//        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View contentView = inflater.inflate(R.layout.activity_personal_details, null, false);
         FrameLayout frame = (FrameLayout) findViewById(R.id.main_container);
-//        frame.removeAllViews();
-//        frame.addView(contentView);
         Bundle args=new Bundle();
         Fragment detailFragment=new ProfileFragment();
         detailFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.main_container,detailFragment).addToBackStack(null).commit();
-
-
-//        mImg = (ImageView)findViewById(R.id.profilepic);
-//        tv_name = (TextView) findViewById(R.id.name);
-//        tv_email = (TextView) findViewById(R.id.add_email);
-//        tv_company = (TextView)findViewById(R.id.company);
-//        tv_education = (TextView)findViewById(R.id.user_education);
-//        tv_employment = (TextView)findViewById(R.id.user_employment_details);
-//        tv_hobbies = (TextView)findViewById(R.id.user_hobbies);
 
         LoadUserData();
 //        ab.setDisplayHomeAsUpEnabled(true);
@@ -235,6 +207,32 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+
+//        final View header = (View) findViewById(R.id.header);
+//        final ImageView imageViewUser =  (ImageView)header.findViewById(R.id.circular_img);
+        View headerView = navigationView.getHeaderView(0);
+        final ImageView circularImg =  (ImageView)headerView.findViewById(R.id.circular_img);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("Users/"+currentUser.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User u = snapshot.getValue(User.class);
+                StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/" + u.profilepic + ".jpg");
+                //StorageReference profReference = FirebaseStorage.getInstance().getReference()("images/")
+                profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(circularImg);
+                    }
+                });
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     private void LoadUserData() {
@@ -277,62 +275,63 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//        circImg = (ImageView) findViewById(R.id.circular_img);
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference ref = database.getReference("Users/"+currentUser.getUid());
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                User u = snapshot.getValue(User.class);
+//                StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/" + u.profilepic + ".jpg");
+//                //StorageReference profReference = FirebaseStorage.getInstance().getReference()("images/")
+//                profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    @Override
+//                    public void onSuccess(Uri uri) {
+//                        Picasso.get().load(uri).into(circImg);
+//                    }
+//                });
+//            }
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                }
+//            });
+//
+//
+
         int id = item.getItemId();
         switch (id) {
             case R.id.item1:
-                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View contentView = inflater.inflate(R.layout.activity_personal_details, null, false);
                 FrameLayout frame = (FrameLayout) findViewById(R.id.main_container);
-                frame.removeAllViews();
-                frame.addView(contentView);
+                Bundle args=new Bundle();
+                Fragment detailFragment=new ProfileFragment();
+                detailFragment.setArguments(args);
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_container,detailFragment).addToBackStack(null).commit();
                 ActionBar ab = getSupportActionBar();
-                ab.setTitle("Profile");
-                Toast toast = Toast.makeText(this, "Item 1 Clicked", Toast.LENGTH_SHORT);
+                ab.setTitle("Home");
+                Toast toast = Toast.makeText(this, "Loading User Profile.", Toast.LENGTH_SHORT);
                 toast.show();
                 break;
             case R.id.item2:
-                Toast toast2 = Toast.makeText(this, "Load edit profile pop up", Toast.LENGTH_SHORT);
-                toast2.show();
+                Intent intent = new Intent(HomeActivity.this, EditProfileActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                View view=findViewById(R.id.edit_profile_action);
+                startActivity(intent);
+                Log.d("bottom bar", "edit profile");
+                break;
+            case R.id.geolocation_finder:
+                Bundle geo_args=new Bundle();
+                Fragment geoFragment=new GeolocationFragment();
+                geoFragment.setArguments(geo_args);
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_container,geoFragment).addToBackStack(null).commit();
+                ActionBar ab_geo = getSupportActionBar();
+                ab_geo.setTitle("Geolocation Search");
+                Toast.makeText(this, "Loading Geolocation Finder.", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
-//    public void LoadNewProfilePhoto(View v)
-//    {
-//        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-//        getIntent.setType("image/*");
-//
-//        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        pickIntent.setType("image/*");
-//
-//        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-//        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
-//
-//        startActivityForResult(chooserIntent, PICK_IMAGE);
-//    }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        ImageView iv = findViewById(R.id.profilepic);
-//        ImageView circularIv = findViewById(R.id.circular_img);
-//        if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK) {
-//            if (data == null) {
-//                //Display an error
-//                return;
-//            }
-//            try {
-//                InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
-//                //Now you can do whatever you want with your inpustream, save it as file, upload to a server, decode a bitmap...
-//                BitmapFactory bitmapFactory = new BitmapFactory();
-//                Bitmap bm = bitmapFactory.decodeStream(inputStream);
-//                iv.setImageBitmap(bm);
-//                circularIv.setImageBitmap(bm);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//    }
 }
