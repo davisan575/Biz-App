@@ -2,6 +2,7 @@ package com.example.afinal;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GeolocationFragment extends Fragment implements OnMapReadyCallback, ItemClickListener{
     private FirebaseAuth mAuth;
@@ -110,6 +113,7 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                             User u = dataSnapshot.getValue(User.class);
                             Log.d("onDataEntered", "Post model just created");
                             if(!userKey.equals(currentUser.getUid())) {
+                                Toast.makeText(c, "User, "+u.displayname+", has entered your area.", Toast.LENGTH_SHORT).show();
                                 key_to_User.put(userKey, u);
                                 keyList.add(userKey);
                                 if(markerList.containsKey(userKey))
@@ -132,22 +136,80 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
 
                         }
                     });
-
-
                 }
 
                 @Override
                 public void onDataExited(DataSnapshot dataSnapshot) {
+                    final String userKey = dataSnapshot.getKey();
+                    if (!key_to_User.containsKey(userKey))
+                        return;
+                    database.getReference("Users/" + userKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            int i = 0;
+                            if(!userKey.equals(currentUser.getUid())) {
+                                Toast.makeText(c, "User, "+key_to_User.get(userKey).displayname+", has left your area.", Toast.LENGTH_SHORT).show();
+                                key_to_User.remove(userKey);
+                                for(String curKey : keyList)
+                                {
+                                    if (curKey.equals(userKey))
+                                    {
+                                        break;
+                                    }
+                                    i++;
+                                }
+                                keyList.remove(i);
+                                if(markerList.containsKey(userKey))
+                                {
+                                    Marker prev = markerList.get(userKey);
+                                    prev.remove();
+                                    markerList.remove(userKey);
+                                }
+                            }
+                            geoRecyclerAdapter.notifyDataSetChanged();
+                            Log.d("onDataExited", "Here");
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
 
                 @Override
                 public void onDataMoved(DataSnapshot dataSnapshot, GeoLocation location) {
 
+                    final String userKey = dataSnapshot.getKey();
+                    if (!key_to_User.containsKey(userKey))
+                        return;
+                    database.getReference("Users/" + userKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            User u = dataSnapshot.getValue(User.class);
+                            Log.d("onDataEntered", "Post model just created");
+                            if (!userKey.equals(currentUser.getUid())) {
+                                Toast.makeText(c, "User, " + u.displayname + ", is on the move!", Toast.LENGTH_SHORT).show();
+                                if (markerList.containsKey(userKey)) {
+                                    Marker prev = markerList.get(userKey);
+                                    prev.setPosition(new LatLng(location.latitude, location.longitude));
+                                }
+                                if (!markerList.containsKey(userKey)) {
+                                    markerList.put(userKey, mMap.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_grey))));
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
 
                 @Override
                 public void onDataChanged(DataSnapshot dataSnapshot, GeoLocation location) {
+
 
                 }
 
@@ -197,7 +259,7 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
         LocationSettingsRequest locationSettingsRequest = builder.build();
         SettingsClient settingsClient = LocationServices.getSettingsClient(c);
         settingsClient.checkLocationSettings(locationSettingsRequest);
-        if (ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -206,6 +268,10 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
 
+            Toast.makeText(c, "We need permission to access your location.", Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(this.getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_FOR_LOCATION);
             getFragmentManager().popBackStack();
         }
         locationCallback = new LocationCallback() {
@@ -231,7 +297,13 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                 {
                     Marker previous = markerList.get(currentUser.getUid());
                     previous.setPosition(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng)));
-                    mySearchCircle.setCenter(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng)));
+                    if(mySearchCircle != null)
+                    {
+                        mySearchCircle.setCenter(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng)));
+                    }
+                    if (mySearchCircle == null) {
+                        mySearchCircle = mMap.addCircle(new CircleOptions().center(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng))).radius(1000).strokeWidth(1f).fillColor(0x500084d3));
+                    }
 
                 }
                 if(!markerList.containsKey(currentUser.getUid()))
@@ -245,11 +317,12 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
         mapFragment.getMapAsync(this);
         //Source
         //https://developer.android.com/training/permissions/requesting#java
-        if (ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(c, "We need permission to access your location.", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this.getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     REQUEST_FOR_LOCATION);
+            //getFragmentManager().popBackStack();
             return v;
         }
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, locationCallback, Looper.getMainLooper());
@@ -290,6 +363,57 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                     System.out.println("The read failed: " + databaseError.getCode());
                 }
             });
+
+        geoRecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+
+                FirebaseDatabase db = FirebaseDatabase.getInstance();
+                String currUser = keyList.get(position);
+                User u =key_to_User.get(currUser);
+                //String currUser = my_AddFriends_RecyclerAdapter.getItem(position).getPostKey_name();
+                //final DatabaseReference userRef= db.getReference("Users").child(currUser);
+
+                final FirebaseStorage storage = FirebaseStorage.getInstance();
+                //final AddFriends_RecyclerAdapter.User u =key_to_User.get(currUser);
+
+                String busCard=u.card;
+                final StorageReference cardRef = storage.getReference("Business_Cards").child(busCard + ".jpg");
+
+                String proPicRef=u.profilepic;
+                final StorageReference picRef = storage.getReference("Profile_Pictures").child(proPicRef + ".jpg");
+
+
+                cardRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(final Uri cardURI) {
+
+                        picRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri picURI) {
+                                Intent intent = new Intent(c, UserDetailActivity.class);
+                                intent.putExtra("card", cardURI.toString());
+                                intent.putExtra("profilepic", picURI.toString());
+                                intent.putExtra("phone", u.phone);
+                                intent.putExtra("displayname", u.displayname);
+                                intent.putExtra("email", u.email);
+                                startActivity(intent);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(c, e.getMessage() + " (profile_pic)", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(c, exception.getMessage() + " (business card)", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
 
 
         return v;
@@ -337,7 +461,21 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //show the image
-                Toast.makeText(c, "Marker clicked", Toast.LENGTH_SHORT).show();
+                String uid = "";
+                for (Map.Entry mapElement : markerList.entrySet()) {
+                    if (mapElement.getValue().equals(marker))
+                    {
+                        uid = mapElement.getKey().toString();
+                    }
+                }
+                if(uid.equals(currentUser.getUid()))
+                {
+                    Toast.makeText(c, "That's you silly!", Toast.LENGTH_SHORT).show();
+
+                }
+                else if(!uid.equals(currentUser.getUid())) {
+                    Toast.makeText(c, "That's "+key_to_User.get(uid).displayname, Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
         });

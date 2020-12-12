@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -212,12 +213,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 //        final ImageView imageViewUser =  (ImageView)header.findViewById(R.id.circular_img);
         View headerView = navigationView.getHeaderView(0);
         final ImageView circularImg =  (ImageView)headerView.findViewById(R.id.circular_img);
+        final TextView headerName = (TextView)headerView.findViewById(R.id.name_header);
+        final TextView headerEmail = (TextView)headerView.findViewById(R.id.email_header);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Users/"+currentUser.getUid());
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User u = snapshot.getValue(User.class);
+                headerName.setText(u.displayname);
+                headerEmail.setText(u.email);
                 StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/" + u.profilepic + ".jpg");
                 //StorageReference profReference = FirebaseStorage.getInstance().getReference()("images/")
                 profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -275,30 +280,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//        circImg = (ImageView) findViewById(R.id.circular_img);
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference ref = database.getReference("Users/"+currentUser.getUid());
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                User u = snapshot.getValue(User.class);
-//                StorageReference profilePathReference = FirebaseStorage.getInstance().getReference("Profile_Pictures/" + u.profilepic + ".jpg");
-//                //StorageReference profReference = FirebaseStorage.getInstance().getReference()("images/")
-//                profilePathReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//                        Picasso.get().load(uri).into(circImg);
-//                    }
-//                });
-//            }
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//
-//                }
-//            });
-//
-//
-
         int id = item.getItemId();
         switch (id) {
             case R.id.item1:
@@ -320,6 +301,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Log.d("bottom bar", "edit profile");
                 break;
             case R.id.geolocation_finder:
+
+                final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+                if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+                    buildAlertMessageNoGps();
+                }
+
                 Bundle geo_args=new Bundle();
                 Fragment geoFragment=new GeolocationFragment();
                 geoFragment.setArguments(geo_args);
@@ -333,5 +321,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 }
