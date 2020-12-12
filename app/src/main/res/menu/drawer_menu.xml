@@ -10,6 +10,11 @@
         android:title="Edit Profile"
         android:icon="@drawable/edit_profile_icon"
         />
+    <item
+        android:id="@+id/geolocation_finder"
+        android:title="Geolocation Finder"
+        android:icon="@drawable/ic_geolocation"
+        />
     <!--        <item android:id="@+id/item3"-->
     <!--            android:title="Master Detail"-->
     <!--            android:icon="@drawable/master_detail_icon"-->

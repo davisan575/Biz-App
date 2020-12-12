@@ -143,12 +143,14 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         BitmapFactory bitmapFactoryProfile = new BitmapFactory();
                         Bitmap bmProfile = bitmapFactoryProfile.decodeStream(inputStreamProfile);
                         editProfilePic.setImageBitmap(bmProfile);
+                        profileUploaded = true;
                         break;
                     case CARD_FRONT:
                         InputStream inputStream = this.getContentResolver().openInputStream(cardUri);
                         BitmapFactory bitmapFactory = new BitmapFactory();
                         Bitmap bm = bitmapFactory.decodeStream(inputStream);
                         editCard.setImageBitmap(bm);
+                        cardUploaded = true;
                         break;
                 }
             }
@@ -301,7 +303,6 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
             String path = "Business_Cards/" + fileNameInStorage + ".jpg";
             final StorageReference imageRef = storage.getReference(path);
             Log.d("path", path);
-            Log.d("cardeUri", cardUri.toString());
             UploadTask uploadTask = imageRef.putFile(cardUri);
             write_user.card = fileNameInStorage;
             Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -318,12 +319,19 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                 @Override
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
-                        cardUploaded = true;
                         Uri downloadUri = task.getResult();
                         final FirebaseDatabase database = FirebaseDatabase.getInstance();
                         //DatabaseReference local_ref = database.getReference("Users/"+currentUser.getUid());
                         //local_ref.setValue(write_user);
-                        RunProfilePicUpload(write_user);
+                        if(profileUploaded == true)
+                        {
+                            RunProfilePicUpload(write_user);
+                        }
+                        else
+                        {
+                            ref.setValue(write_user);
+                            finish();
+                        }
                         finish();
                     } else {
                         Toast.makeText(EditProfileActivity.this, "issue", Toast.LENGTH_SHORT).show();
@@ -363,7 +371,6 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    cardUploaded = true;
                     Uri downloadUri = task.getResult();
                     Log.d("path url version: ", fileNameInStorage + ".jpg");
                     final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -449,11 +456,9 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
         switch (image_type) {
             case PROFILE:
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, profilepicUri);
-                profileUploaded = true;
                 break;
             case CARD_FRONT:
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, cardUri);
-                cardUploaded = true;
                 break;
         }
         Intent chooser=Intent.createChooser(intent,"Select a Camera App.");

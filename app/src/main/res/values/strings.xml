@@ -12,4 +12,5 @@
         <item>"Phone"</item>
         <item>"Email"</item>
     </string-array>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBjK1lB0e-q_dvH0KKkKFqISrgf689HVYM</string>
 </resources>

@@ -16,7 +16,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
-        android:src="@drawable/santa"
+        android:src="@drawable/profile_icon"
         app:civ_border_width="2dp"
         app:civ_border_color="#FFFFFF"/>
     <TextView
