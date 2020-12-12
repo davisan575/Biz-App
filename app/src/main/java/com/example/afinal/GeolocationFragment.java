@@ -367,7 +367,7 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
         geoRecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-
+                Toast.makeText(c, "Running on item click", Toast.LENGTH_SHORT).show();
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
                 String currUser = keyList.get(position);
                 User u =key_to_User.get(currUser);
