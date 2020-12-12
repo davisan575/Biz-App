@@ -283,8 +283,8 @@ public class Friends_RecyclerAdapter extends RecyclerView.Adapter<Friends_Recycl
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.friend_card_view, parent,false);
         final ViewHolder vh = new ViewHolder(v);
+        v.setClickable(true);
         v.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 if (onListItemClickListener != null) {
