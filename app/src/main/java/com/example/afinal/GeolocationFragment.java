@@ -105,8 +105,10 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             User u = dataSnapshot.getValue(User.class);
                             Log.d("onDataEntered", "Post model just created");
-                            key_to_User.put(userKey, u);
-                            keyList.add(userKey);
+                            if(!userKey.equals(currentUser.getUid())) {
+                                key_to_User.put(userKey, u);
+                                keyList.add(userKey);
+                            }
                             geoRecyclerAdapter.notifyItemInserted(keyList.size() - 1);
                             geoRecyclerView.scrollToPosition(keyList.size() - 1);
                             Log.d("onDataEntered", "Here");
@@ -181,6 +183,17 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
         LocationSettingsRequest locationSettingsRequest = builder.build();
         SettingsClient settingsClient = LocationServices.getSettingsClient(c);
         settingsClient.checkLocationSettings(locationSettingsRequest);
+        if (ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+// TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            getFragmentManager().popBackStack();
+        }
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -197,6 +210,9 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 // }
                 newLocation(lastLocation);
+                final String lastLat = String.valueOf(lastLocation.getLatitude());
+                final String lastLng = String.valueOf(lastLocation.getLongitude());
+                geoFire.setLocation(currentUser.getUid(), new GeoLocation(Double.parseDouble(lastLat),Double.parseDouble(lastLng)));
             }
         };
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(c);

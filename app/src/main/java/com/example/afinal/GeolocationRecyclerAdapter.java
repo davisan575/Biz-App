@@ -50,8 +50,7 @@ public class GeolocationRecyclerAdapter
     private List<String> keyList;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();;
     private FirebaseUser currentUser = mAuth.getCurrentUser();
-    private List<User> usersList;
-    private List<User> users_filtered;
+    static private List<String> friends;
     private Uri profileImageUri=null;
     private HashMap<String,User> key_to_User;
     private Context c;
@@ -59,7 +58,6 @@ public class GeolocationRecyclerAdapter
     private  ItemClickListener itemClickListener;
 //    private List<User> usersList;
 //    private List<User> users_filtered;
-    private ArrayList<String> friendsList;
     private RecyclerView r;
     private onListItemClickListener onListItemClickListener=null;
     DatabaseReference friendsNode = allPostsRef.child(currentUser.getUid()).child("friends");
@@ -68,10 +66,37 @@ public class GeolocationRecyclerAdapter
     public GeolocationRecyclerAdapter(HashMap<String,User> kp, List<String> kl, ItemClickListener _itemClickListener, Context c) {
         keyList = kl;
         key_to_User = kp;
+        friends = new ArrayList<>();
         c = this.c;
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         itemClickListener = _itemClickListener;
+
+        FirebaseDatabase.getInstance().getReference().child("Users/"+currentUser.getUid()+"/friends")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Log.d("DEBUG", "In loop for key");
+                            String friendChild = snapshot.getKey();
+                            friends.add(snapshot.getKey());
+                            Log.d("friendkey: ", friendChild);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        //Toast.makeText(this.getActivity(), "FAIL", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        for( String friend : friends)
+        {
+            Log.d("Friend Key: ", friend);
+        }
+        Log.d("size: ", Integer.toString(friends.size())) ;
+    }
+
+    public void setOnListItemClickListener(onListItemClickListener listener) {
+        onListItemClickListener=listener;
     }
 
     @NonNull
@@ -112,6 +137,35 @@ public class GeolocationRecyclerAdapter
         String card_name = u.card;
         holder.name_v.setText(u.displayname);
         final StorageReference cardRef = storage.getReference("Business_Cards").child(card_name + ".jpg");
+        DatabaseReference currUserPath = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
+        DatabaseReference friendsPath = currUserPath.child("friends");
+
+
+        if(!friends.contains(keyList.get(position)))
+        {
+            holder.add_friend_v.setClickable(true);
+            holder.add_friend_v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DatabaseReference currUser = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
+                    DatabaseReference friendsPath = currUser.child("friends");
+                    friendsPath.child(keyList.get(position)).setValue(true);
+                    holder.add_friend_v.setVisibility(View.INVISIBLE);
+                    //Toast.makeText(c, u.displayname + " has been added to your friends", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        if(friends.contains(keyList.get(position)))
+        {
+            holder.add_friend_v.setClickable(false);
+            holder.add_friend_v.setVisibility(View.INVISIBLE);
+        }
+//
+//        if (holder.uref != null && holder.urefListener != null) {
+//            Log.d("GeoAdapter", " Running remove listener ");
+//            holder.uref.removeEventListener(holder.urefListener);
+//        }
+
         cardRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri URI) {
@@ -126,84 +180,84 @@ public class GeolocationRecyclerAdapter
             }
         });
 
-        ////NOTE I EDITED THIS!
-        if (!keyList.contains(userKey)) {
-            Log.d("****NOT IN FRIENDS LIST", userKey);
-            if (userKey.equals(currentUser.getUid())) {
-                holder.add_friend_v.setVisibility(View.INVISIBLE);
-            } else {
-                holder.add_friend_v.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        DatabaseReference currUser = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
-                        DatabaseReference friendsPath = currUser.child("friends");
-                        friendsPath.child(keyList.get(position)).setValue(true);
-                        holder.add_friend_v.setVisibility(View.INVISIBLE);
-                        Toast.makeText(c, u.displayname + " has been added to your friends", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-
-            if (holder.uref != null && holder.urefListener != null) {
-                holder.uref.removeEventListener(holder.urefListener);
-            }
-
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            holder.uref = database.getReference("Users");
-            holder.uref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-//                holder.fname_v.setText("First Name: " +dataSnapshot.child("displayname").getValue().toString());
-//                holder.email_v.setText("Email:  " + dataSnapshot.child("email").getValue().toString());
-//                holder.phone_v.setText("Phone Num:  " + dataSnapshot.child("phone").getValue().toString());
-//                holder.date_v.setText("Date Created: "+u.date);
-//                if(dataSnapshot.child("profilePicture").exists())
-//                {
-//                    Picasso.get().load(dataSnapshot.child("profilePicture").getValue().toString()).transform(new CircleTransform()).into(holder.fab);
-//                }
-//                else
-//                {
-//                    holder.fab.setImageDrawable( ContextCompat.getDrawable(holder.fab.getContext(), R.drawable.lab_logo));
-//
-//                }                holder.fname_v.setText("First Name: " +dataSnapshot.child("displayname").getValue().toString());
-//                holder.email_v.setText("Email:  " + dataSnapshot.child("email").getValue().toString());
-//                holder.phone_v.setText("Phone Num:  " + dataSnapshot.child("phone").getValue().toString());
-//                holder.date_v.setText("Date Created: "+u.date);
-//                if(dataSnapshot.child("profilePicture").exists())
-//                {
-//                    Picasso.get().load(dataSnapshot.child("profilePicture").getValue().toString()).transform(new CircleTransform()).into(holder.fab);
-//                }
-//                else
-//                {
-//                    holder.fab.setImageDrawable( ContextCompat.getDrawable(holder.fab.getContext(), R.drawable.lab_logo));
-//
-//                }
-//                holder.fab.setOnClickListener(new View.OnClickListener() {
-//
+//        ////NOTE I EDITED THIS!
+//        if (!keyList.contains(userKey)) {
+//            Log.d("****NOT IN FRIENDS LIST", userKey);
+//            if (userKey.equals(currentUser.getUid())) {
+//                holder.add_friend_v.setVisibility(View.INVISIBLE);
+//            } else {
+//                holder.add_friend_v.setOnClickListener(new View.OnClickListener() {
 //                    @Override
-//                    public void onClick(View v) {
-//                        // DatabaseReference dbr = database.getReference("Posts").child(u.postKey).child("uid");
-//                        String postOwnerId = u.uid;
-//                        String currentUserId = currentUser.getUid();
-//                        String email = currentUser.getEmail();
-//                        Log.d("onBindViewHolder", "postowner: " + postOwnerId + ", userid: " + currentUserId);
-//                        Intent intent = new Intent(holder.fab.getContext(), MessengerActivity.class);
-//                        intent.putExtra("CURRENT_USER_ID", currentUserId);
-//                        intent.putExtra("POST_USER_ID", postOwnerId);
-//                        intent.putExtra("POST_KEY", u.postKey);
-//                        String substr = holder.fname_v.getText().toString().substring(12);
-//                        intent.putExtra("USER_NAME",email);
-//                        //intent.putExtra("URI", currentUser.getPhotoUrl().toString());
-//                        holder.fab.getContext().startActivity(intent);
-//                        //Toast.makeText(c, postOwnerId + " and " + currentUserId , Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
+//                    public void onClick(View view) {
+//                        DatabaseReference currUser = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
+//                        DatabaseReference friendsPath = currUser.child("friends");
+//                        friendsPath.child(keyList.get(position)).setValue(true);
+//                        holder.add_friend_v.setVisibility(View.INVISIBLE);
+//                        Toast.makeText(c, u.displayname + " has been added to your friends", Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//            }
+//
+//            if (holder.uref != null && holder.urefListener != null) {
+//                holder.uref.removeEventListener(holder.urefListener);
+//            }
+//
+//            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+//            holder.uref = database.getReference("Users");
+//            holder.uref.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+////                holder.fname_v.setText("First Name: " +dataSnapshot.child("displayname").getValue().toString());
+////                holder.email_v.setText("Email:  " + dataSnapshot.child("email").getValue().toString());
+////                holder.phone_v.setText("Phone Num:  " + dataSnapshot.child("phone").getValue().toString());
+////                holder.date_v.setText("Date Created: "+u.date);
+////                if(dataSnapshot.child("profilePicture").exists())
+////                {
+////                    Picasso.get().load(dataSnapshot.child("profilePicture").getValue().toString()).transform(new CircleTransform()).into(holder.fab);
+////                }
+////                else
+////                {
+////                    holder.fab.setImageDrawable( ContextCompat.getDrawable(holder.fab.getContext(), R.drawable.lab_logo));
+////
+////                }                holder.fname_v.setText("First Name: " +dataSnapshot.child("displayname").getValue().toString());
+////                holder.email_v.setText("Email:  " + dataSnapshot.child("email").getValue().toString());
+////                holder.phone_v.setText("Phone Num:  " + dataSnapshot.child("phone").getValue().toString());
+////                holder.date_v.setText("Date Created: "+u.date);
+////                if(dataSnapshot.child("profilePicture").exists())
+////                {
+////                    Picasso.get().load(dataSnapshot.child("profilePicture").getValue().toString()).transform(new CircleTransform()).into(holder.fab);
+////                }
+////                else
+////                {
+////                    holder.fab.setImageDrawable( ContextCompat.getDrawable(holder.fab.getContext(), R.drawable.lab_logo));
+////
+////                }
+////                holder.fab.setOnClickListener(new View.OnClickListener() {
+////
+////                    @Override
+////                    public void onClick(View v) {
+////                        // DatabaseReference dbr = database.getReference("Posts").child(u.postKey).child("uid");
+////                        String postOwnerId = u.uid;
+////                        String currentUserId = currentUser.getUid();
+////                        String email = currentUser.getEmail();
+////                        Log.d("onBindViewHolder", "postowner: " + postOwnerId + ", userid: " + currentUserId);
+////                        Intent intent = new Intent(holder.fab.getContext(), MessengerActivity.class);
+////                        intent.putExtra("CURRENT_USER_ID", currentUserId);
+////                        intent.putExtra("POST_USER_ID", postOwnerId);
+////                        intent.putExtra("POST_KEY", u.postKey);
+////                        String substr = holder.fname_v.getText().toString().substring(12);
+////                        intent.putExtra("USER_NAME",email);
+////                        //intent.putExtra("URI", currentUser.getPhotoUrl().toString());
+////                        holder.fab.getContext().startActivity(intent);
+////                        //Toast.makeText(c, postOwnerId + " and " + currentUserId , Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                }
+//            });
+//        }
 
 //        holder.likeCountRef=
 //                database.getReference("Posts/"+u.postKey+"/likeCount");
