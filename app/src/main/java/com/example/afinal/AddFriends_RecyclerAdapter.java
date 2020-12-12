@@ -56,7 +56,7 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
 
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
+                String charString = charSequence.toString().toLowerCase();
                 if(filterType.equals("Email")) {
                     if (charString.isEmpty()) {
                         users_filtered = usersList;
@@ -64,7 +64,7 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
                     else {
                         List<User> filteredList = new ArrayList<>();
                         for (User u : users_filtered) {
-                            if (u.email.contains(charString)) {
+                            if (u.email.toLowerCase().contains(charString)) {
                                 filteredList.add((u));
                             }
                         }
@@ -92,7 +92,7 @@ public class AddFriends_RecyclerAdapter extends RecyclerView.Adapter<AddFriends_
                     else {
                         List<User> filteredList = new ArrayList<>();
                         for (User u : users_filtered) {
-                            if (u.displayname.contains(charString)) {
+                            if (u.displayname.toLowerCase().contains(charString)) {
                                 filteredList.add((u));
                             }
                         }
