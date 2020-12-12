@@ -63,11 +63,11 @@ public class GeolocationRecyclerAdapter
     DatabaseReference friendsNode = allPostsRef.child(currentUser.getUid()).child("friends");
 
 
-    public GeolocationRecyclerAdapter(HashMap<String,User> kp, List<String> kl, ItemClickListener _itemClickListener, Context c) {
+    public GeolocationRecyclerAdapter(HashMap<String,User> kp, List<String> kl, ItemClickListener _itemClickListener, Context ctx) {
         keyList = kl;
         key_to_User = kp;
         friends = new ArrayList<>();
-        c = this.c;
+        c = ctx;
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         itemClickListener = _itemClickListener;
@@ -104,6 +104,14 @@ public class GeolocationRecyclerAdapter
     public GeolocationRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view, parent,false);
         final GeolocationRecyclerAdapter.ViewHolder vh = new GeolocationRecyclerAdapter.ViewHolder(v);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onListItemClickListener != null) {
+                    onListItemClickListener.onItemClick(v, vh.getAdapterPosition());
+                }
+            }
+        });
         return vh;
     }
 

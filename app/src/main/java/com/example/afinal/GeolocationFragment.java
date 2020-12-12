@@ -72,10 +72,11 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/geofire");
     private GoogleMap mMap;
-    private Circle searchCircle;
+    private Circle mySearchCircle;
     private GeoFire geoFire = new GeoFire(ref);
     private GeoQuery geoQuery = null;
     private List<String> keyList = null;
+    private HashMap<String, Marker> markerList = null;
     private HashMap<String, User> key_to_User = null;
     private RecyclerView geoRecyclerView;
     private GeolocationRecyclerAdapter geoRecyclerAdapter;
@@ -90,10 +91,13 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
     Context c;
 
     public void newLocation(Location lastLocation) {
-        if (geoQuery != null)
+        if (geoQuery != null) {
             geoQuery.setCenter(new GeoLocation(lastLocation.getLatitude(), lastLocation.getLongitude()));
+            //mySearchCircle.setCenter(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+        }
         else {
-            geoQuery = geoFire.queryAtLocation(new GeoLocation(lastLocation.getLatitude(), lastLocation.getLongitude()), 10);
+            geoQuery = geoFire.queryAtLocation(new GeoLocation(lastLocation.getLatitude(), lastLocation.getLongitude()), 1);
+            //mySearchCircle = mMap.addCircle(new CircleOptions().center(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).radius(.25).strokeWidth(0f).fillColor(0x550000FF));
             geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
                 @Override
                 public void onDataEntered(DataSnapshot dataSnapshot, GeoLocation location) {
@@ -108,6 +112,15 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                             if(!userKey.equals(currentUser.getUid())) {
                                 key_to_User.put(userKey, u);
                                 keyList.add(userKey);
+                                if(markerList.containsKey(userKey))
+                                {
+                                    Marker prev = markerList.get(userKey);
+                                    prev.setPosition(new LatLng(location.latitude,location.longitude));
+                                }
+                                if(!markerList.containsKey(userKey))
+                                {
+                                    markerList.put(userKey, mMap.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_grey))));
+                                }
                             }
                             geoRecyclerAdapter.notifyItemInserted(keyList.size() - 1);
                             geoRecyclerView.scrollToPosition(keyList.size() - 1);
@@ -160,6 +173,7 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
         currentUser = mAuth.getCurrentUser();
         keyList = new ArrayList<>();
         key_to_User = new HashMap<>();
+        markerList = new HashMap<>();
         Bundle args = getArguments();
         //c = args.c;
         c = container.getContext();
@@ -213,6 +227,18 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                 final String lastLat = String.valueOf(lastLocation.getLatitude());
                 final String lastLng = String.valueOf(lastLocation.getLongitude());
                 geoFire.setLocation(currentUser.getUid(), new GeoLocation(Double.parseDouble(lastLat),Double.parseDouble(lastLng)));
+                if(markerList.containsKey(currentUser.getUid()))
+                {
+                    Marker previous = markerList.get(currentUser.getUid());
+                    previous.setPosition(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng)));
+                    mySearchCircle.setCenter(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng)));
+
+                }
+                if(!markerList.containsKey(currentUser.getUid()))
+                {
+                    markerList.put(currentUser.getUid(),mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng))).icon(BitmapDescriptorFactory.fromResource(R.drawable.my_purple_marker))));
+                    mySearchCircle = mMap.addCircle(new CircleOptions().center(new LatLng(Double.parseDouble(lastLat), Double.parseDouble(lastLng))).radius(1000).strokeWidth(1f).fillColor(0x500084d3));
+                }
             }
         };
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(c);
@@ -233,6 +259,15 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
             final String lat = String.valueOf(location.getLatitude());
             final String lng = String.valueOf(location.getLongitude());
             geoFire.setLocation(currentUser.getUid(), new GeoLocation(Double.parseDouble(lat),Double.parseDouble(lng)));
+            if(markerList.containsKey(currentUser.getUid()))
+            {
+                Marker previous = markerList.get(currentUser.getUid());
+                previous.setPosition(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)));
+            }
+            if(!markerList.containsKey(currentUser.getUid()))
+            {
+                markerList.put(currentUser.getUid(),mMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng))).icon(BitmapDescriptorFactory.fromResource(R.drawable.my_purple_marker))));
+            }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -317,6 +352,15 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
             return;
         }
         mMap.setMyLocationEnabled(true);
+
+        geoRecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                FirebaseDatabase db = FirebaseDatabase.getInstance();
+                String userClickedKey = keyList.get(position);
+                final DatabaseReference geoRef = db.getReference("geofire/"+userClickedKey+"/l");
+            }
+        });
 //        LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
 //        this.searchCircle = mMap.addCircle(new CircleOptions().center(latLngCenter).radius(10));
 //        this.searchCircle = this.mMap.addCircle(new
