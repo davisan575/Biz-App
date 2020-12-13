@@ -209,9 +209,44 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
 
                 @Override
                 public void onDataChanged(DataSnapshot dataSnapshot, GeoLocation location) {
-
-
-                }
+//                    final String userKey = dataSnapshot.getKey();
+////                    if (key_to_User.containsKey(userKey))
+////                        return;
+//                    database.getReference("Users/" + userKey).addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                            User u = dataSnapshot.getValue(User.class);
+//                            Log.d("onDataEntered", "Post model just created");
+//                            if(userKey.equals(currentUser.getUid()))
+//                            {
+//                                geoRecyclerAdapter.updateFriends();
+//                            }
+//                            if(!userKey.equals(currentUser.getUid())) {
+//                                Toast.makeText(c, "User, "+u.displayname+", has entered your area.", Toast.LENGTH_SHORT).show();
+//                                key_to_User.put(userKey, u); // put again to replace?
+//                                //keyList.add(userKey);
+//                                if(markerList.containsKey(userKey))
+//                                {
+//                                    Marker prev = markerList.get(userKey);
+//                                    prev.setPosition(new LatLng(location.latitude,location.longitude));
+//                                }
+//                                if(!markerList.containsKey(userKey))
+//                                {
+//                                    markerList.put(userKey, mMap.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_grey))));
+//                                }
+//                            }
+//                            geoRecyclerAdapter.notifyItemInserted(keyList.size() - 1);
+//                            geoRecyclerView.scrollToPosition(keyList.size() - 1);
+//                            Log.d("onDataEntered", "Here");
+                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//
+//                }
 
                 @Override
                 public void onGeoQueryReady() {
@@ -367,7 +402,6 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
         geoRecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                Toast.makeText(c, "Running on item click", Toast.LENGTH_SHORT).show();
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
                 String currUser = keyList.get(position);
                 User u =key_to_User.get(currUser);
@@ -387,7 +421,7 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                 cardRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(final Uri cardURI) {
-
+                        Toast.makeText(c, "Loading details for "+u.displayname, Toast.LENGTH_SHORT).show();
                         picRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri picURI) {
@@ -491,14 +525,14 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
         }
         mMap.setMyLocationEnabled(true);
 
-        geoRecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                FirebaseDatabase db = FirebaseDatabase.getInstance();
-                String userClickedKey = keyList.get(position);
-                final DatabaseReference geoRef = db.getReference("geofire/"+userClickedKey+"/l");
-            }
-        });
+//        geoRecyclerAdapter.setOnListItemClickListener(new onListItemClickListener() {
+//            @Override
+//            public void onItemClick(View v, int position) {
+//                FirebaseDatabase db = FirebaseDatabase.getInstance();
+//                String userClickedKey = keyList.get(position);
+//                final DatabaseReference geoRef = db.getReference("geofire/"+userClickedKey+"/l");
+//            }
+//        });
 //        LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
 //        this.searchCircle = mMap.addCircle(new CircleOptions().center(latLngCenter).radius(10));
 //        this.searchCircle = this.mMap.addCircle(new

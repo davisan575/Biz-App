@@ -367,6 +367,26 @@ public class GeolocationRecyclerAdapter
         return keyList.size();
     }
 
+//    public void updateFriends() {
+//        friends.clear();
+//        FirebaseDatabase.getInstance().getReference().child("Users/"+currentUser.getUid()+"/friends")
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                            Log.d("DEBUG", "In loop for key");
+//                            String friendChild = snapshot.getKey();
+//                            friends.add(snapshot.getKey());
+//                            Log.d("friendkey: ", friendChild);
+//                        }
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        //Toast.makeText(this.getActivity(), "FAIL", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public ImageView business_v;
