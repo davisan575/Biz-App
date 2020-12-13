@@ -41,19 +41,13 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Re-enter password"
-                android:id="@+id/repeat_password"
+                android:hint="Working Status"
+                android:id="@+id/add_company"
                 app:layout_constraintTop_toBottomOf="@id/add_password"></EditText>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Company (Optional)"
-                android:id="@+id/add_company"
-                app:layout_constraintTop_toBottomOf="@id/repeat_password"></EditText>
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Phone number (Optional)"
+                android:hint="Phone number"
                 android:id="@+id/add_phone"
                 app:layout_constraintTop_toBottomOf="@id/add_company"></EditText>
 <!--            <ImageView-->

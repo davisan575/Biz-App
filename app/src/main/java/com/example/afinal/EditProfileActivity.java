@@ -43,6 +43,8 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class EditProfileActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
@@ -64,6 +66,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
     EditText edit_education;
     EditText edit_employment;
     EditText edit_hobbies;
+    List<String> save_friends = new ArrayList<>();
 
     ImageView editProfilePic;
     ImageView editCard;
@@ -85,8 +88,6 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_FOR_CAMERA && resultCode == RESULT_OK) {
-
-
             switch (image_type) {
                 case PROFILE:
                     if(profilepicUri==null)
@@ -99,6 +100,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         BitmapFactory bitmapFactory = new BitmapFactory();
                         Bitmap bm = bitmapFactory.decodeStream(inputStream);
                         editProfilePic.setImageBitmap(bm);
+                        profileUploaded = true;
                     }
                     catch(FileNotFoundException e){
                         e.printStackTrace();
@@ -116,6 +118,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         BitmapFactory bitmapFactory = new BitmapFactory();
                         Bitmap bm = bitmapFactory.decodeStream(inputStream);
                         editCard.setImageBitmap(bm);
+                        cardUploaded = true;
                     }
                     catch(FileNotFoundException e){
                         e.printStackTrace();
@@ -185,6 +188,23 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
 
         editCard = (ImageView) findViewById(R.id.edit_business_card);
         editProfilePic = (ImageView) findViewById(R.id.edit_profilepic);
+
+        FirebaseDatabase.getInstance().getReference().child("Users/"+currentUser.getUid()+"/friends")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Log.d("DEBUG", "In loop for key");
+                            String friendChild = snapshot.getKey();
+                            save_friends.add(snapshot.getKey());
+                            Log.d("friendkey: ", friendChild);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        //Toast.makeText(this.getActivity(), "FAIL", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         // Get a reference to our posts
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -294,6 +314,10 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
             else
             {
                 ref.setValue(write_user);
+                for(String friendUid : save_friends)
+                {
+                    ref.child("friends").child(friendUid).setValue(true);
+                }
                 finish();
             }
         }
@@ -330,7 +354,15 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         else
                         {
                             ref.setValue(write_user);
+                            for(String friendUid : save_friends)
+                            {
+                                ref.child("friends").child(friendUid).setValue(true);
+                            }
                             finish();
+                        }
+                        for(String friendUid : save_friends)
+                        {
+                            ref.child("friends").child(friendUid).setValue(true);
                         }
                         finish();
                     } else {
@@ -448,7 +480,7 @@ public class EditProfileActivity extends AppCompatActivity implements PopupMenu.
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 break;
             case CARD_FRONT:
-                profilepicUri = getContentResolver().insert(
+                cardUri = getContentResolver().insert(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 break;
         }
