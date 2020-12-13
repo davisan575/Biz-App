@@ -119,64 +119,63 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 User u = snapshot.getValue(User.class);
-//                                StringBuilder sb = new StringBuilder();
-//                                sb.append("Hello! It was lovely connecting with you today.");
-//                                sb.append('\n');
-//                                sb.append('\n');
-//                                sb.append("You can find my contact information below:");
-//                                sb.append('\n');
-//                                sb.append("Name : ");
-//                                sb.append(u.displayname);
-//                                sb.append('\n');
-//                                sb.append("Email : ");
-//                                sb.append(u.email);
-//                                sb.append('\n');
-//                                sb.append("Phone : ");
-//                                sb.append(u.phone);
-//                                sb.append('\n');
-//                                sb.append("Current Employment : ");
-//                                sb.append(u.employment);
-//                                sb.append('\n');
-//                                sb.append('\n');
-//                                sb.append("Download Biz-App to find more connections!");
-//
-//                                Intent intent = new Intent(Intent.ACTION_SEND);
-//                                intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
-//                                intent.setType("text/plain");
-//                                Intent chooser = Intent.createChooser(intent, "Share via");
-//                                if (intent.resolveActivity(getPackageManager()) != null) {
-//                                    startActivity(chooser);
-//                                }
-                                String cardName = u.card;
-                                Log.d("card name", u.card);
-                                FirebaseStorage storage = FirebaseStorage.getInstance();
-                                StorageReference cardRef = storage.getReference("Business_Cards").child(cardName + ".jpg");
-                                cardRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri picURI) {
-                                        Intent intent = new Intent(Intent.ACTION_SEND);
-//                                        intent.putExtra(Intent.EXTRA_TEXT, "Hello! It was nice to connect with you. " +
-//                                                "Feel free to contact me via my information below.");
-//                                        intent.setType("text/plain");
-                                        intent.putExtra(Intent.EXTRA_STREAM, picURI);
-                                        intent.setType("image/jpeg");
-//                                        intent.putExtra(Intent.EXTRA_TEXT, "Download Biz-App to find more connections!");
-//                                        intent.setType("text/plain");
-                                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                                        startActivity(intent);
-                                        Intent chooser = Intent.createChooser(intent, "Share via");
-                                        if (intent.resolveActivity(getPackageManager()) != null) {
-                                            startActivity(chooser);
-                                        }
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("Hello! It was lovely connecting with you today.");
+                                sb.append('\n');
+                                sb.append('\n');
+                                sb.append("You can find my contact information below:");
+                                sb.append('\n');
+                                sb.append("Name : ");
+                                sb.append(u.displayname);
+                                sb.append('\n');
+                                sb.append("Email : ");
+                                sb.append(u.email);
+                                sb.append('\n');
+                                sb.append("Phone : ");
+                                sb.append(u.phone);
+                                sb.append('\n');
+                                sb.append("Current Employment : ");
+                                sb.append(u.employment);
+                                sb.append('\n');
+                                sb.append('\n');
+                                sb.append("Download Biz-App to find more connections!");
+
+                                Intent intent = new Intent(Intent.ACTION_SEND);
+                                intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
+                                intent.setType("text/plain");
+                                Intent chooser = Intent.createChooser(intent, "Share via");
+                                if (intent.resolveActivity(getPackageManager()) != null) {
+                                    startActivity(chooser);
+                                }
+//                                String cardName = u.card;
+//                                Log.d("card name", u.card);
+//                                FirebaseStorage storage = FirebaseStorage.getInstance();
+//                                StorageReference cardRef = storage.getReference("Business_Cards").child(cardName + ".jpg");
+//                                cardRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                    @Override
+//                                    public void onSuccess(Uri picURI) {
+//                                        Intent intent = new Intent(Intent.ACTION_SEND);
+////                                        intent.putExtra(Intent.EXTRA_TEXT, "Hello! It was nice to connect with you. " +
+////                                                "Feel free to contact me via my information below.");
+////                                        intent.setType("text/plain");
+//                                        intent.putExtra(Intent.EXTRA_STREAM, picURI);
+//                                        intent.setType("image/jpeg");
+////                                        intent.putExtra(Intent.EXTRA_TEXT, "Download Biz-App to find more connections!");
+////                                        intent.setType("text/plain");
+//                                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+////                                        startActivity(intent);
+//                                        Intent chooser = Intent.createChooser(intent, "Share via");
+//                                        if (intent.resolveActivity(getPackageManager()) != null) {
+//                                            startActivity(chooser);
+//                                        }
                                     }
-                                });
-                            }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
 
                             }
                         });
+
                         Log.d("bottom bar", "share action");
                         return true;
                     case R.id.add_friend_action:
