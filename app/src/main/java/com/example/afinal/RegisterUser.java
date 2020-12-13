@@ -61,7 +61,6 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
     EditText et_fn;
     EditText et_ln;
     EditText et_password;
-    EditText et_repeat_password;
     EditText et_company;
     EditText et_phonenumber;
     FloatingActionButton fab_save;
@@ -120,7 +119,6 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
         setContentView(R.layout.activity_register);
         et_email = (EditText) findViewById(R.id.add_email);
         et_password = (EditText) findViewById(R.id.add_password);
-        et_repeat_password = (EditText) findViewById(R.id.repeat_password);
         et_fn = (EditText) findViewById(R.id.add_first_name);
         et_ln = (EditText) findViewById(R.id.add_last_name);
         et_company = (EditText)findViewById(R.id.add_company);
@@ -313,7 +311,6 @@ public class RegisterUser extends AppCompatActivity implements PopupMenu.OnMenuI
     }
 
     private boolean isPasswordValid(String password) {
-        Log.d("isPasswordValid", "verify: " + et_repeat_password.getText().toString());
         return password != null && password.trim().length() > 5;
     }
 

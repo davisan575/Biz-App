@@ -129,6 +129,22 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                             geoRecyclerAdapter.notifyItemInserted(keyList.size() - 1);
                             geoRecyclerView.scrollToPosition(keyList.size() - 1);
                             Log.d("onDataEntered", "Here");
+                            Log.d("onDataEntered", "xxx KEYLIST xxx "+Integer.toString(keyList.size()));
+                            for(String curKey : keyList)
+                            {
+                                Log.d("key list", curKey);
+                            }
+                            Log.d("onDataEntered", "xxx MARKERLIST xxx "+Integer.toString(markerList.size()));
+
+                            for (Map.Entry mapElement : markerList.entrySet()) {
+
+                                Log.d("Marker element key: ", mapElement.getKey().toString());
+                            }
+                            Log.d("onDataEntered", "xxx USERKEYMAP xxx "+Integer.toString(key_to_User.size()));
+                            for (Map.Entry mapElement : key_to_User.entrySet()) {
+
+                                Log.d("Users map key: ", mapElement.getKey().toString());
+                            }
                         }
 
                         @Override
@@ -168,6 +184,23 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
                             }
                             geoRecyclerAdapter.notifyDataSetChanged();
                             Log.d("onDataExited", "Here");
+                            Log.d("onDataExited", "xxx KEYLIST xxx "+Integer.toString(keyList.size()));
+                            for(String curKey : keyList)
+                            {
+                                Log.d("key list", curKey);
+                            }
+                            Log.d("onDataExited", "xxx MARKERLIST xxx "+Integer.toString(markerList.size()));
+
+                            for (Map.Entry mapElement : markerList.entrySet()) {
+
+                                Log.d("Marker element key: ", mapElement.getKey().toString());
+                            }
+                            Log.d("onDataExited", "xxx USERKEYMAP xxx "+Integer.toString(key_to_User.size()));
+                            for (Map.Entry mapElement : key_to_User.entrySet()) {
+
+                                Log.d("Users map key: ", mapElement.getKey().toString());
+                            }
+
                         }
 
                         @Override
@@ -204,6 +237,22 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback,
 
                         }
                     });
+                    Log.d("onDataMoved", "xxx KEYLIST xxx "+Integer.toString(keyList.size()));
+                    for(String curKey : keyList)
+                    {
+                        Log.d("key list", curKey);
+                    }
+                    Log.d("onDataMoved", "xxx MARKERLIST xxx "+Integer.toString(markerList.size()));
+
+                    for (Map.Entry mapElement : markerList.entrySet()) {
+
+                        Log.d("Marker element key: ", mapElement.getKey().toString());
+                    }
+                    Log.d("onDataMoved", "xxx USERKEYMAP xxx "+Integer.toString(key_to_User.size()));
+                    for (Map.Entry mapElement : key_to_User.entrySet()) {
+
+                        Log.d("Users map key: ", mapElement.getKey().toString());
+                    }
 
                 }
 
